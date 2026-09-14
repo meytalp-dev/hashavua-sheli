@@ -1,0 +1,1077 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2C6E66">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="השבוע שלי">
+<title>השבוע שלי</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Secular+One&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+:root{
+  --ground:#EEF3EF; --surface:#FFFFFF; --ink:#1B2A25; --muted:#5E6F68; --line:#D5DFD9;
+  --malcha:#2C6E66; --malcha-soft:#DCEBE8;
+  --arnona:#B8661A; --arnona-soft:#F6E6D3;
+  --meds:#6F4796; --meds-soft:#ECE3F5;
+  --done:#9AA8A2;
+  --radius:14px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#101714; --surface:#18221E; --ink:#E6EEEA; --muted:#98A9A2; --line:#2A3833;
+    --malcha:#6CC0B5; --malcha-soft:#1D3431; --arnona:#EBA462; --arnona-soft:#3A2A1B;
+    --meds:#C4A3E6; --meds-soft:#2C2238; --done:#5D6C66;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#101714; --surface:#18221E; --ink:#E6EEEA; --muted:#98A9A2; --line:#2A3833;
+  --malcha:#6CC0B5; --malcha-soft:#1D3431; --arnona:#EBA462; --arnona-soft:#3A2A1B;
+  --meds:#C4A3E6; --meds-soft:#2C2238; --done:#5D6C66;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{
+  background:var(--ground); color:var(--ink);
+  font-family:"Assistant","Segoe UI",Arial,sans-serif; font-size:17px; line-height:1.45;
+  -webkit-tap-highlight-color:transparent;
+}
+.app{max-width:560px; margin:0 auto; padding-inline:16px; padding-block:0 40px}
+h1,h2,h3{font-family:"Secular One","Assistant",sans-serif; font-weight:400; margin:0; text-wrap:balance}
+button,input{font:inherit; color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--malcha); outline-offset:2px}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace; font-variant-numeric:tabular-nums}
+
+/* header */
+header.top{padding-block:18px 10px; display:grid; gap:12px}
+.weekbar{display:grid; gap:10px; padding-block:12px 4px}
+.titlebar{display:flex; align-items:center; justify-content:space-between; gap:8px}
+.titlebar h1{font-size:26px; line-height:1.1}
+.titlebar .sub{color:var(--muted); font-size:14px}
+.weeknav{display:flex; align-items:center; gap:6px}
+.iconbtn{width:38px; height:38px; border-radius:50%; border:1px solid var(--line); background:var(--surface); display:grid; place-items:center; font-size:18px}
+.whois{display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:15px; color:var(--muted)}
+.seg{display:inline-flex; border:1px solid var(--line); border-radius:999px; background:var(--surface); padding:3px}
+.seg button{border:0; background:transparent; padding:5px 14px; border-radius:999px; font-weight:600}
+.seg button[aria-pressed="true"]{background:var(--ink); color:var(--ground)}
+.unsure{font-size:13px; color:var(--arnona); font-weight:600}
+
+.strip{display:grid; grid-template-columns:repeat(7,1fr); gap:5px}
+.dayp{border:1px solid var(--line); background:var(--surface); border-radius:12px; padding:6px 0 7px; display:grid; justify-items:center; gap:1px; position:relative}
+.dayp .dn{font-size:13px; color:var(--muted); font-weight:600}
+.dayp .dd{font-size:17px; font-weight:700}
+.dayp .loc{width:22px; height:5px; border-radius:3px; margin-top:3px}
+.dayp.malcha .loc{background:var(--malcha)}
+.dayp.arnona .loc{background:var(--arnona)}
+.dayp[aria-current="date"]{border-color:var(--ink); border-width:2px; padding:5px 0 6px}
+.dayp.today .dn::after{content:" •"; color:var(--meds)}
+.legend{display:flex; gap:14px; font-size:13px; color:var(--muted)}
+.legend i{display:inline-block; width:14px; height:5px; border-radius:3px; margin-inline-end:5px; vertical-align:middle}
+
+/* sections */
+section.view{display:grid; gap:14px; padding-top:6px}
+.dayhead{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap}
+.dayhead h2{font-size:22px}
+.place{display:inline-flex; align-items:center; gap:6px; padding:5px 12px; border-radius:999px; font-weight:700; font-size:15px}
+.place.malcha{background:var(--malcha-soft); color:var(--malcha)}
+.place.arnona{background:var(--arnona-soft); color:var(--arnona)}
+
+.timeline{list-style:none; margin:0; padding:0; display:grid; gap:8px}
+.item{display:grid; grid-template-columns:54px 1fr 40px; gap:10px; align-items:start; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:12px}
+.item .time{font-size:14px; color:var(--muted); padding-top:2px}
+.item .kind{font-size:12px; font-weight:700; letter-spacing:.04em; color:var(--muted)}
+.item .what{font-weight:600}
+.item .extra{font-size:14px; color:var(--muted)}
+.item.meds{background:var(--meds-soft); border-color:transparent}
+.item.meds .kind{color:var(--meds)}
+.item.gym{background:var(--arnona-soft); border-color:transparent}
+.item.gym .kind{color:var(--arnona)}
+.pills{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px}
+.pill{background:var(--surface); color:var(--meds); border-radius:999px; padding:2px 10px; font-size:14px; font-weight:700}
+.check{width:36px; height:36px; border-radius:50%; border:2px solid var(--line); background:var(--surface); display:grid; place-items:center; font-size:18px; color:transparent}
+.check[aria-pressed="true"]{background:var(--malcha); border-color:var(--malcha); color:#fff}
+.item.meds .check[aria-pressed="true"]{background:var(--meds); border-color:var(--meds)}
+.item.is-done .what,.item.is-done .extra{color:var(--done); text-decoration:line-through; text-decoration-thickness:1px}
+.linkbtn{background:none; border:0; padding:0; color:var(--malcha); font-weight:700; font-size:14px; text-decoration:underline; text-underline-offset:3px}
+
+.panel{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:14px; display:grid; gap:10px}
+.panel h3{font-size:18px}
+.note{font-size:14px; color:var(--muted)}
+.btn{border:0; border-radius:12px; padding:12px 16px; font-weight:700; background:var(--ink); color:var(--ground)}
+.btn.ghost{background:transparent; color:var(--ink); border:1px solid var(--line)}
+.row{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+label.opt{display:flex; gap:8px; align-items:center; font-size:15px}
+input[type="time"],input[type="text"]{border:1px solid var(--line); background:var(--surface); border-radius:10px; padding:8px 10px}
+
+/* week table */
+.wk{display:grid; gap:8px}
+.wkday{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:10px 12px; display:grid; gap:4px; text-align:start; width:100%}
+.wkday .h{display:flex; justify-content:space-between; align-items:center; gap:8px}
+.wkday .h b{font-size:16px}
+.wkday .ln{font-size:14px; color:var(--muted)}
+.wkday .ln span{color:var(--ink)}
+.tag{font-size:12px; font-weight:700; padding:2px 8px; border-radius:999px}
+.tag.malcha{background:var(--malcha-soft); color:var(--malcha)}
+.tag.arnona{background:var(--arnona-soft); color:var(--arnona)}
+
+/* shopping */
+.dept{display:grid; gap:0; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden}
+.dept h3{font-size:16px; padding:10px 14px; border-bottom:1px solid var(--line)}
+.shop{display:grid; grid-template-columns:28px 1fr auto; gap:10px; align-items:center; padding:10px 14px; border-bottom:1px solid var(--line)}
+.shop:last-child{border-bottom:0}
+.shop input{width:22px; height:22px; accent-color:var(--malcha)}
+.shop .q{font-size:14px; color:var(--muted)}
+.shop.got .n{color:var(--done); text-decoration:line-through}
+.progress{height:6px; background:var(--line); border-radius:3px; overflow:hidden}
+.progress i{display:block; height:100%; background:var(--malcha)}
+
+/* recipes */
+details.rc{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius)}
+details.rc summary{list-style:none; padding:12px 14px; display:flex; justify-content:space-between; gap:10px; align-items:center; font-weight:700}
+details.rc summary::-webkit-details-marker{display:none}
+details.rc summary .t{font-size:13px; color:var(--muted); font-weight:600; white-space:nowrap}
+details.rc[open] summary{border-bottom:1px solid var(--line)}
+.rcbody{padding:10px 14px 14px; display:grid; gap:8px; font-size:16px}
+.rcbody ul,.rcbody ol{margin:0; padding-inline-start:20px; display:grid; gap:4px}
+.subtabs{display:flex; gap:6px}
+.subtabs button{border:1px solid var(--line); background:var(--surface); border-radius:999px; padding:6px 14px; font-weight:600}
+.subtabs button[aria-pressed="true"]{background:var(--ink); color:var(--ground); border-color:var(--ink)}
+.snacklist{list-style:none; margin:0; padding:0; display:grid; gap:6px}
+.snacklist li{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:10px 12px; display:flex; justify-content:space-between; gap:8px; align-items:center}
+
+/* bottom nav */
+nav.tabs{position:sticky; top:0; z-index:10; background:var(--ground); padding-block:6px}
+nav.tabs .in{display:grid; grid-template-columns:repeat(6,1fr); background:var(--surface); border:1px solid var(--line); border-radius:16px; overflow:hidden}
+.mgrid{display:grid; grid-template-columns:repeat(7,1fr); gap:4px}
+.mh{font-size:12px; color:var(--muted); text-align:center; font-weight:700; padding-bottom:2px}
+.mcell{border:0; border-radius:10px; padding:6px 2px 5px; min-height:60px; display:grid; align-content:start; justify-items:center; gap:1px; font-size:11px; font-weight:700}
+.mcell.malcha{background:var(--malcha-soft); color:var(--malcha)}
+.mcell.arnona{background:var(--arnona-soft); color:var(--arnona)}
+.mcell .num{font-size:16px; color:var(--ink)}
+.mcell .ok{color:var(--meds); font-size:12px; min-height:14px}
+.mcell.out{opacity:.4}
+.mcell.today{box-shadow:inset 0 0 0 2px var(--ink)}
+.stats{display:grid; grid-template-columns:repeat(3,1fr); gap:8px}
+.stat{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:10px; display:grid; gap:2px}
+.stat b{font-size:22px; font-family:"IBM Plex Mono",monospace}
+.stat span{font-size:13px; color:var(--muted)}
+.wh{margin:6px 0 0; font-size:15px; color:var(--arnona)}
+nav.tabs button{border:0; background:none; padding:8px 0 9px; display:grid; justify-items:center; gap:2px; font-size:12.5px; font-weight:600; color:var(--muted)}
+nav.tabs button svg{width:24px; height:24px; stroke:currentColor; fill:none; stroke-width:1.8}
+nav.tabs button[aria-selected="true"]{color:var(--ground); background:var(--malcha)}
+.edited{font-size:11px; font-weight:700; color:var(--meds); background:var(--meds-soft); border-radius:999px; padding:1px 7px; letter-spacing:0}
+.acts{display:flex; gap:16px; margin-top:4px}
+.poolrow{display:flex; align-items:center; gap:8px; padding-block:4px; border-bottom:1px solid var(--line)}
+.addform{display:grid; gap:6px; padding-top:6px}
+.sheet{position:fixed; inset:0; background:rgba(10,20,16,.45); z-index:30; display:flex; align-items:flex-end; justify-content:center}
+.sheetcard{background:var(--ground); width:100%; max-width:560px; max-height:88vh; overflow-y:auto; border-radius:20px 20px 0 0; padding:16px 16px calc(20px + env(safe-area-inset-bottom)); display:grid; gap:12px}
+.sheethead{display:flex; justify-content:space-between; align-items:start; gap:8px; position:sticky; top:-16px; background:var(--ground); padding-block:4px}
+.picks{display:grid; gap:6px}
+.picks h4{margin:8px 0 0; font-size:14px; color:var(--muted)}
+.pick{display:flex; gap:10px; align-items:flex-start; background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:10px 12px}
+.pick input[type=radio]{width:20px; height:20px; margin-top:2px; accent-color:var(--malcha); flex:none}
+.pick:has(input[type=radio]:checked){border-color:var(--malcha); box-shadow:inset 0 0 0 1px var(--malcha)}
+.toast{position:fixed; bottom:24px; inset-inline:16px; margin:0 auto; max-width:420px; background:var(--ink); color:var(--ground); padding:10px 14px; border-radius:12px; text-align:center; font-weight:600; z-index:40}
+@media (prefers-reduced-motion:no-preference){ .check,.seg button{transition:background .15s, color .15s} }
+@media print{ nav.tabs,header.top .weeknav{display:none} }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="titlebar">
+      <div>
+        <h1>השבוע שלי</h1>
+        <div class="sub" id="weekLabel"></div>
+      </div>
+      <div class="weeknav">
+        <button class="iconbtn" id="prevWeek" aria-label="שבוע קודם">›</button>
+        <button class="iconbtn" id="todayBtn" aria-label="חזרה להיום" style="width:auto;padding-inline:12px;border-radius:999px;font-size:14px;font-weight:700">היום</button>
+        <button class="iconbtn" id="nextWeek" aria-label="שבוע הבא">‹</button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tabs" aria-label="ניווט">
+    <div class="in" role="tablist">
+      <button role="tab" data-tab="day" aria-selected="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3 2"/></svg>יום</button>
+      <button role="tab" data-tab="week" aria-selected="false"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>שבוע</button>
+      <button role="tab" data-tab="month" aria-selected="false"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4M8 14h.01M12 14h.01M16 14h.01M8 17h.01M12 17h.01"/></svg>חודש</button>
+      <button role="tab" data-tab="shop" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M4 5h2l2 10h10l2-7H7"/><circle cx="9.5" cy="19" r="1.3"/><circle cx="17" cy="19" r="1.3"/></svg>קניות</button>
+      <button role="tab" data-tab="gym" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M6.5 8v8M17.5 8v8M3.5 10v4M20.5 10v4M6.5 12h11"/></svg>כושר</button>
+      <button role="tab" data-tab="recipes" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11M9 8h6"/></svg>מתכונים</button>
+    </div>
+  </nav>
+
+  <div class="weekbar">
+    <div class="whois" id="weekPlace"></div>
+    <div class="strip" id="strip"></div>
+    <div class="legend" id="legend"><span><i style="background:var(--malcha)"></i>מלחה</span><span><i style="background:var(--arnona)"></i>ארנונה + חדר כושר</span></div>
+  </div>
+
+  <main>
+    <section class="view" id="view-day"></section>
+    <section class="view" id="view-week" hidden></section>
+    <section class="view" id="view-month" hidden></section>
+    <section class="view" id="view-shop" hidden></section>
+    <section class="view" id="view-gym" hidden></section>
+    <section class="view" id="view-recipes" hidden></section>
+  </main>
+</div>
+<div class="sheet" id="sheet" hidden><div class="sheetcard" role="dialog" aria-modal="true" aria-label="עריכת ארוחה" id="sheetBody"></div></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ============ נתונים ============ */
+const MEDS_AM = ["קיסגדו","אסציטלופרם","טריטייס"];
+const MEDS_PM = ["טורז"];
+const DAY_NAMES = ["ראשון","שני","שלישי","רביעי","חמישי","שישי","שבת"];
+const DAY_SHORT = ["א׳","ב׳","ג׳","ד׳","ה׳","ו׳","ש׳"];
+const MALCHA_DAYS = { meytal:[0,1,5,6], lior:[2,3,4] };
+const BASE_WEEK = "2026-09-13"; // נקודת התחלה לסבב התפריטים
+
+const DEPTS = { always:"קבוע בכל שבוע", mine:"מהמנות ששיניתי", veg:"ירקות ופירות", dairy:"מקרר — חלבי וביצים", meat:"עוף ודגים", frozen:"קפואים", pantry:"מזווה" };
+const ING = {
+  ricecake:{n:"פריכיות",d:"pantry",u:"יח׳"},
+  cottage:{n:"קוטג׳ 5%",d:"dairy",u:"גביע"},
+  egg:{n:"ביצים",d:"dairy",u:"יח׳"},
+  yogurt:{n:"יוגורט (רגיל / חלבון)",d:"dairy",u:"גביע"},
+  labane:{n:"לבנה 5%",d:"dairy",u:"גביע"},
+  hummus:{n:"סלט חומוס",d:"dairy",u:"גביע"},
+  tomato:{n:"עגבניות",d:"veg",u:"יח׳"},
+  cucumber:{n:"מלפפונים",d:"veg",u:"יח׳"},
+  lettuce:{n:"לבבות קיסר",d:"veg",u:"מארז"},
+  cherry:{n:"עגבניות שרי",d:"veg",u:"סלסלה"},
+  avocado:{n:"אבוקדו",d:"veg",u:"יח׳"},
+  coriander:{n:"כוסברה",d:"veg",u:"צרור"},
+  dill:{n:"שמיר",d:"veg",u:"צרור"},
+  basil:{n:"בזיליקום",d:"veg",u:"צרור"},
+  cabbage:{n:"כרוב לבן",d:"veg",u:"ראש"},
+  greenapple:{n:"תפוח ירוק",d:"veg",u:"יח׳"},
+  peas:{n:"אפונה",d:"frozen",u:"גרם"},
+  olives:{n:"זיתי קלמטה",d:"pantry",u:"צנצנת"},
+  roastedpeppers:{n:"פלפלים קלויים",d:"pantry",u:"צנצנת"},
+  pepper:{n:"פלפלים",d:"veg",u:"יח׳"},
+  lemon:{n:"לימונים",d:"veg",u:"יח׳"},
+  greenonion:{n:"בצל ירוק",d:"veg",u:"צרור"},
+  parsley:{n:"פטרוזיליה",d:"veg",u:"צרור"},
+  spinach:{n:"עלי תרד",d:"veg",u:"שקית"},
+  redonion:{n:"בצל סגול",d:"veg",u:"יח׳"},
+  onion:{n:"בצל",d:"veg",u:"יח׳"},
+  garlic:{n:"שום",d:"veg",u:"ראש"},
+  carrot:{n:"גזר",d:"veg",u:"יח׳"},
+  zucchini:{n:"קישואים",d:"veg",u:"יח׳"},
+  broccoli:{n:"ברוקולי",d:"veg",u:"גרם"},
+  cauliflower:{n:"כרובית",d:"veg",u:"גרם"},
+  redcabbage:{n:"כרוב סגול",d:"veg",u:"ראש"},
+  beet:{n:"סלק מבושל (ואקום)",d:"veg",u:"חבילה"},
+  apple:{n:"תפוחים",d:"veg",u:"יח׳"},
+  banana:{n:"בננות",d:"veg",u:"יח׳"},
+  chickenBreast:{n:"חזה עוף",d:"meat",u:"גרם"},
+  groundChicken:{n:"עוף טחון",d:"meat",u:"גרם"},
+  thighs:{n:"כרעיים (ללא עור)",d:"meat",u:"גרם"},
+  salmon:{n:"פילה סלמון",d:"meat",u:"גרם"},
+  tilapia:{n:"פילה אמנון / מושט",d:"meat",u:"גרם"},
+  greenbeans:{n:"שעועית ירוקה",d:"frozen",u:"גרם"},
+  peasCarrots:{n:"אפונה וגזר",d:"frozen",u:"גרם"},
+  mango:{n:"מנגו",d:"veg",u:"יח׳"},
+  grapes:{n:"ענבים",d:"veg",u:"גרם"},
+  figs:{n:"תאנים",d:"veg",u:"יח׳"},
+  pear:{n:"אגסים",d:"veg",u:"יח׳"},
+  melon:{n:"מלון",d:"veg",u:"יח׳"},
+  kiwi:{n:"קיווי",d:"veg",u:"יח׳"},
+  mint:{n:"נענע",d:"veg",u:"צרור"},
+  feta:{n:"קוביות בולגרית",d:"dairy",u:"גביע"},
+  edamame:{n:"אדממה",d:"frozen",u:"גרם"},
+  bulgur:{n:"בורגול",d:"pantry",u:"גרם"},
+  chickpeas:{n:"גרגירי חומוס (שימורים)",d:"pantry",u:"קופסה"},
+  tuna:{n:"טונה במים",d:"pantry",u:"קופסה"},
+  corn:{n:"תירס מתוק (שימורים)",d:"pantry",u:"קופסה"},
+  crushed:{n:"עגבניות מרוסקות",d:"pantry",u:"קופסה"},
+  granola:{n:"גרנולה ללא תוספת סוכר",d:"pantry",u:"גרם"},
+  almonds:{n:"שקדים טבעיים",d:"pantry",u:"גרם"},
+  walnuts:{n:"אגוזי מלך",d:"pantry",u:"גרם"},
+  dates:{n:"תמרים מג׳הול",d:"pantry",u:"יח׳"},
+  pickles:{n:"מלפפונים חמוצים",d:"pantry",u:"צנצנת"}
+};
+const ALWAYS = ["cottage","ricecake","lemon","lettuce","feta","tuna"];
+const STAPLES = ["שמן זית","טחינה גולמית","חמאת בוטנים טבעית","קקאו","קינמון","פפריקה מתוקה","כמון","זעתר","חרדל","דבש","רוטב סויה","מלח גס ופלפל"];
+
+const BREAKFAST_BASE = {ricecake:2, cottage:.5, tomato:1};
+const BREAKFASTS = [
+  {n:"2 ביצים קשות", i:{egg:2}},
+  {n:"חביתה עם בצל ירוק", i:{egg:2, greenonion:.25}},
+  {n:"שקשוקה אישית", i:{egg:2, tomato:1, pepper:.5, onion:.25}, r:"shakshuka"},
+  {n:"חביתת תרד ופטרוזיליה", i:{egg:2, spinach:.3, parsley:.25}},
+  {n:"ביצת עין + ביצה קשה", i:{egg:2}}
+];
+const LUNCHES = [
+  {n:"חזה עוף בגריל", side:"ברוקולי מאודה ובורגול", i:{chickenBreast:150, broccoli:200, bulgur:60, lemon:.25}, r:"chicken"},
+  {n:"קציצות עוף טחון ברוטב עגבניות", side:"שעועית ירוקה מאודה ובורגול", i:{groundChicken:150, crushed:.5, onion:.25, greenbeans:200, bulgur:60}, r:"kofta"},
+  {n:"סלמון בתנור", side:"קישואים וגזר מאודים ובורגול", i:{salmon:150, zucchini:1, carrot:1, bulgur:60, lemon:.25}, r:"salmon"},
+  {n:"כרעיים בתנור עם פפריקה", side:"כרובית מאודה ובורגול", i:{thighs:200, cauliflower:200, bulgur:60, garlic:.1}, r:"thighs"},
+  {n:"אמנון בלימון ושום", side:"ברוקולי מאודה ובורגול", i:{tilapia:150, broccoli:200, bulgur:60, lemon:.5, garlic:.1}, r:"fish"},
+  {n:"מוקפץ חזה עוף וירקות", side:"על מצע בורגול", i:{chickenBreast:150, pepper:1, zucchini:.5, carrot:.5, bulgur:60}, r:"stirfry"},
+  {n:"פטיות עוף טחון וירק", side:"אפונה וגזר מאודים ובורגול", i:{groundChicken:150, parsley:.25, onion:.25, peasCarrots:200, bulgur:60}, r:"patties"}
+];
+const DINNER_BASE = {lettuce:.34, chickpeas:.5, tuna:1, corn:.34, cucumber:1, pepper:.5};
+const DINNER_BASE_TEXT = "לבבות קיסר, גרגירי חומוס, טונה ותירס";
+const DINNERS = [
+  {n:"סלט קיסר קליל", d:"קוביות בולגרית, מלפפון ורוטב יוגורט-לימון-חרדל", i:{feta:.2, lemon:.5, yogurt:.25}, r:"dressings"},
+  {n:"סלט יווני", d:"עגבנייה, מלפפון, בצל סגול, זיתים, קוביות בולגרית ואורגנו", i:{tomato:1, redonion:.25, olives:.15, feta:.2, lemon:.5}},
+  {n:"סלט ים תיכוני ירוק", d:"בצל סגול, הרבה פטרוזיליה ולימון", i:{redonion:.25, parsley:.34, lemon:.5}},
+  {n:"סלט טחינה", d:"מלפפון, עגבנייה וטחינה דלילה עם לימון", i:{tomato:1, lemon:.5}, r:"dressings"},
+  {n:"סלט סלק", d:"סלק מבושל, גזר מגורד וקוביות בולגרית", i:{beet:.34, carrot:1, feta:.15, lemon:.5}},
+  {n:"סלט כרוב סגול", d:"כרוב סגול דק ורוטב חרדל-דבש", i:{redcabbage:.2, lemon:.25}, r:"dressings"},
+  {n:"סלט מקסיקני", d:"פלפל אדום, עגבנייה, כוסברה, לימון ופפריקה", i:{tomato:1, coriander:.25, lemon:.5}},
+  {n:"סלט עם תפוח ירוק", d:"תפוח ירוק פרוס, 3 אגוזי מלך ורוטב חרדל-דבש", i:{greenapple:1, walnuts:10, lemon:.25}, r:"dressings"},
+  {n:"סלט שרי ובזיליקום", d:"עגבניות שרי, בזיליקום, קוביות בולגרית ושמן זית", i:{cherry:.5, basil:.25, feta:.2}},
+  {n:"סלט אפונה ושמיר", d:"אפונה מופשרת, שמיר ורוטב יוגורט-לימון", i:{peas:80, dill:.25, yogurt:.25, lemon:.5}, r:"dressings"},
+  {n:"סלט פלפלים קלויים", d:"פלפלים קלויים מצנצנת, בצל סגול ומעט כמון", i:{roastedpeppers:.25, redonion:.2, lemon:.25}},
+  {n:"סלט עם ביצה ואבוקדו", d:"ביצה קשה, רבע אבוקדו, עגבנייה ולימון", i:{egg:1, avocado:.25, tomato:1, lemon:.5}},
+  {n:"סלט אסייתי", d:"כרוב לבן דק, בצל ירוק, שומשום ורוטב סויה-לימון", i:{cabbage:.15, greenonion:.25, lemon:.5}},
+  {n:"סלט חמוצים ושמיר", d:"מלפפון חמוץ, מלפפון טרי, שמיר ושמן זית", i:{pickles:.2, dill:.25, lemon:.25}}
+];
+const SNACKS_AM = [
+  {n:"יוגורט עם תאנה חתוכה וכפית דבש", i:{yogurt:1, figs:1}},
+  {n:"יוגורט עם כף גרנולה וקינמון", i:{yogurt:1, granola:20}},
+  {n:"יוגורט עם תפוח מגורד וקינמון", i:{yogurt:1, apple:.5}},
+  {n:"פודינג יוגורט-קקאו עם חצי בננה", i:{yogurt:1, banana:.5}, r:"pudding"},
+  {n:"יוגורט עם כפית טחינה ותמר קצוץ", i:{yogurt:1, dates:1}},
+  {n:"ארטיק יוגורט ומנגו", i:{yogurt:1, mango:.34}, r:"popsicle"},
+  {n:"יוגורט עם אגס חתוך ואגוזי מלך", i:{yogurt:1, pear:1, walnuts:10}}
+];
+const SNACKS_PM = [
+  {n:"קערת ענבים ו-2 תאנים", i:{grapes:150, figs:2}},
+  {n:"סלט פירות עם נענע ולימון", i:{mango:.34, kiwi:1, apple:.5, mint:.2}, r:"fruitsalad"},
+  {n:"קוביות מלון עם קוביות בולגרית 5%", i:{melon:.25, feta:.2}},
+  {n:"תפוח אפוי במיקרו עם קינמון", i:{apple:1}, r:"bakedapple"},
+  {n:"תפוח עם כף חמאת בוטנים", i:{apple:1}},
+  {n:"ביצה קשה ומלפפון", i:{egg:1, cucumber:1}},
+  {n:"פריכית עם קוטג׳ ופרוסות עגבנייה", i:{ricecake:1, cottage:.25, tomato:.5}},
+  {n:"15 שקדים טבעיים", i:{almonds:20}},
+  {n:"כוס אדממה מאודה עם מלח גס", i:{edamame:100}},
+  {n:"רצועות פלפל אדום עם לבנה וזעתר", i:{pepper:1, labane:.25}},
+  {n:"2 תמרים ממולאים בחצי אגוז מלך", i:{dates:2, walnuts:10}},
+  {n:"גרגירי חומוס קלויים ופריכים", i:{chickpeas:.34}, r:"roasted"}
+];
+
+const RECIPES = {
+  bulgur:{t:"בורגול לכל השבוע", time:"20 דק׳ · פעם בשבוע", cat:"prep",
+    ing:["2 כוסות בורגול (כ-400 גרם)","3 כוסות מים רותחים","כפית מלח, כף שמן זית"],
+    steps:["מחממים שמן בסיר ומקפיצים את הבורגול 2 דקות.","מוסיפים מים רותחים ומלח, מערבבים פעם אחת.","מכסים, מנמיכים לאש קטנה ומבשלים 12 דקות.","מכבים ומשאירים מכוסה 10 דקות. מפרידים במזלג.","מחלקים ל-4 קופסאות — מחזיק במקרר 4 ימים."]},
+  steam:{t:"ירקות מאודים ב-8 דקות", time:"10 דק׳", cat:"prep",
+    ing:["ברוקולי / כרובית / שעועית / קישוא וגזר","מלח, לימון, מעט שמן זית"],
+    steps:["מרתיחים 2 ס״מ מים בסיר עם מסננת או סלסלת אידוי.","מניחים את הירקות, מכסים.","ברוקולי ושעועית 6–7 דק׳, כרובית וגזר 8–10 דק׳.","מתבלים במלח, לימון וטיפת שמן זית.","בלי סיר אידוי: קערה במיקרו עם 3 כפות מים, מכוסה, 4–5 דק׳."]},
+  chicken:{t:"חזה עוף בגריל", time:"15 דק׳", cat:"lunch",
+    ing:["150 גרם חזה עוף","כף שמן זית, מיץ מרבע לימון","פפריקה, שום גבישי, מלח ופלפל"],
+    steps:["משטחים את החזה בפטיש או חותכים לאורך לשני סטייקים דקים.","משרים 10 דקות בשמן, לימון ותבלינים.","צולים במחבת פסים חמה 4 דק׳ מכל צד.","נותנים לנוח 3 דקות לפני שחותכים."]},
+  kofta:{t:"קציצות עוף ברוטב עגבניות", time:"30 דק׳ · מספיק ל-2", cat:"lunch",
+    ing:["300 גרם עוף טחון","חצי בצל מגורד","קופסת עגבניות מרוסקות","שן שום, כמון, פפריקה, מלח"],
+    steps:["מערבבים עוף טחון, בצל, מלח וכמון. יוצרים 8 קציצות.","בסיר רחב מחממים עגבניות מרוסקות, שום, פפריקה וחצי כוס מים.","מכניסים את הקציצות לרוטב הרותח, מכסים.","מבשלים 20 דקות על אש בינונית-נמוכה.","חצי מנה למקרר — ארוחה מוכנה למחר."]},
+  salmon:{t:"סלמון בתנור", time:"20 דק׳", cat:"lunch",
+    ing:["150 גרם פילה סלמון","פרוסות לימון","מלח, פלפל, שמיר או פטרוזיליה"],
+    steps:["מחממים תנור ל-200 מעלות.","מניחים את הדג על נייר אפייה, מתבלים ומניחים פרוסות לימון מעל.","אופים 12–14 דקות — עד שהבשר מתפרק בקלות.","בזמן האפייה מאדים קישואים וגזר."]},
+  thighs:{t:"כרעיים בתנור עם פפריקה", time:"45 דק׳ · מספיק ל-2", cat:"lunch",
+    ing:["400 גרם כרעיים ללא עור","2 כפות שמן זית","כף פפריקה, 2 שיני שום כתושות, מלח"],
+    steps:["מערבבים את הכרעיים עם השמן, השום והתבלינים.","מסדרים בתבנית בשכבה אחת.","אופים בחום 200 מעלות 35–40 דקות עד שמשחימים.","אפשר להכניס כרובית לאותה תבנית ב-20 הדקות האחרונות."]},
+  fish:{t:"אמנון בלימון ושום", time:"15 דק׳", cat:"lunch",
+    ing:["150 גרם פילה אמנון","מיץ מחצי לימון","שן שום, כף שמן זית, מלח"],
+    steps:["מחממים שמן במחבת ומטגנים את השום חצי דקה.","מניחים את הפילה, 3 דקות מכל צד.","מוסיפים מיץ לימון ל-30 שניות אחרונות.","מפזרים פטרוזיליה אם יש."]},
+  stirfry:{t:"מוקפץ חזה עוף וירקות", time:"15 דק׳", cat:"lunch",
+    ing:["150 גרם חזה עוף ברצועות","פלפל, חצי קישוא, חצי גזר ברצועות","כף רוטב סויה, כפית דבש, שן שום"],
+    steps:["מחממים מחבת רחבה עם כפית שמן על אש גבוהה.","מקפיצים את העוף 4 דקות עד שמזהיב, מוציאים.","מקפיצים את הירקות 3 דקות — שיישארו פריכים.","מחזירים את העוף, מוסיפים סויה, דבש ושום, דקה ומכבים.","מגישים על בורגול מוכן."]},
+  patties:{t:"פטיות עוף וירק", time:"25 דק׳ · 6 פטיות", cat:"lunch",
+    ing:["300 גרם עוף טחון","חצי צרור פטרוזיליה קצוצה","רבע בצל מגורד, ביצה","מלח, פלפל, כמון"],
+    steps:["מערבבים הכל ויוצרים 6 פטיות שטוחות.","צולים במחבת עם מעט שמן 4–5 דקות מכל צד.","או: בתנור 200 מעלות 18 דקות.","3 פטיות למקרר ליום אחר."]},
+  shakshuka:{t:"שקשוקה אישית", time:"15 דק׳", cat:"breakfast",
+    ing:["2 ביצים","עגבנייה וחצי פלפל קצוצים","רבע בצל, פפריקה, מלח"],
+    steps:["מאדים בצל ופלפל במחבת קטנה 3 דקות.","מוסיפים עגבנייה ותבלינים, 5 דקות עד שמתרכך.","שוברים את הביצים פנימה, מכסים ל-4 דקות."]},
+  dressings:{t:"3 רטבים לסלט הערב", time:"2 דק׳ כל אחד", cat:"dinner",
+    ing:["לימון: 2 כפות לימון, כף שמן זית, מלח ופלפל","טחינה דלילה: כף טחינה גולמית, 2 כפות מים, לימון, מלח","חרדל-דבש: כפית חרדל, חצי כפית דבש, כף לימון, כף שמן זית","יוגורט-לימון (לקיסר ולאפונה): 3 כפות יוגורט, כף לימון, חצי כפית חרדל, שן שום קטנה, מלח"],
+    steps:["סוגרים בצנצנת קטנה ומנערים.","אפשר להכין כמות לשלושה ימים ולשמור במקרר."]},
+  pudding:{t:"פודינג יוגורט-קקאו", time:"3 דק׳", cat:"snack",
+    ing:["גביע יוגורט","כפית קקאו","חצי בננה מעוכה (או כפית דבש)"],
+    steps:["מערבבים יוגורט, קקאו ובננה עד שחלק.","10 דקות במקרר — ומתקבל מרקם של פודינג."]},
+  popsicle:{t:"ארטיק יוגורט ומנגו", time:"5 דק׳ + לילה במקפיא", cat:"snack",
+    ing:["3 גביעי יוגורט","מנגו בשל חתוך לקוביות קטנות","כף דבש (לא חובה)"],    steps:["מועכים חצי מהמנגו במזלג ומערבבים עם היוגורט והדבש.","מוסיפים את שאר הקוביות.","מוזגים לתבניות ארטיק או כוסות קטנות עם מקל.","לילה במקפיא — 3 ביניים מוכנות לשבוע."]},
+  fruitsalad:{t:"סלט פירות עם נענע ולימון", time:"5 דק׳", cat:"snack",
+    ing:["קוביות מנגו, קיווי וחצי תפוח (או כל פרי בעונה)","כמה עלי נענע קצוצים","כף מיץ לימון"],
+    steps:["חותכים את הפירות לקוביות.","מערבבים עם לימון ונענע — הלימון שומר שהתפוח לא ישחיר.","מחזיק יום בקופסה סגורה במקרר."]},
+  bakedapple:{t:"תפוח אפוי במיקרו", time:"5 דק׳", cat:"snack",
+    ing:["תפוח","קינמון","כפית דבש או 2 אגוזי מלך קצוצים (לא חובה)"],
+    steps:["מוציאים ליבה וחותכים את התפוח לפלחים.","מניחים בקערה, מפזרים קינמון ומוסיפים כף מים.","מכסים ומחממים 3 דקות במיקרו עד שמתרכך.","אפשר עם כף יוגורט מעל."]},
+  roasted:{t:"גרגירי חומוס קלויים", time:"35 דק׳", cat:"snack",
+    ing:["קופסת גרגירי חומוס, מסוננת ומיובשת במגבת","כף שמן זית","פפריקה, כמון, מלח"],
+    steps:["מחממים תנור ל-200 מעלות.","מערבבים את הגרגירים עם השמן והתבלינים.","אופים 30 דקות, מנערים את התבנית באמצע.","מצננים — מתקשים ונעשים פריכים. מחזיק 3 ימים בקופסה פתוחה."]}
+};
+
+/* ============ תוכנית אימונים ============ */
+const EX = {
+  bike:{n:"אופניים עם משענת (שכובים)", how:"התנגדות קלה, קצב שמאפשר לדבר במשפטים מלאים.", knee:"הכי עדין לברכיים. מכוונים את המושב כך שבדחיפה הרגל כמעט ישרה."},
+  walk:{n:"הליכה על הליכון", how:"מהירות נוחה, בלי שיפוע. מותר להחזיק במעקה.", knee:"אם הברכיים מתלוננות — חוזרים לאופניים."},
+  elliptical:{n:"אליפטיקל", how:"התנגדות נמוכה, תנועה רכה ואיטית.", knee:"רק אם האופניים כבר מרגישים קלים ואין כאב."},
+  legpress:{n:"לחיצת רגליים (Leg press)", how:"משקל קל. דוחפים עם כל כף הרגל, נושפים בדחיפה, חוזרים לאט.", knee:"לא לרדת עמוק — עד זווית ישרה בברך בערך. לא לנעול את הברכיים בסוף."},
+  abduction:{n:"הרחקת ירכיים במכונה", how:"בישיבה, פותחים את הרגליים לאט נגד הכריות וחוזרים לאט.", knee:"מחזק את הישבן — וזה מה שמייצב את הברך."},
+  legraise:{n:"הרמת רגל ישרה בשכיבה", how:"על מזרן, רגל אחת כפופה. מרימים את הרגל הישרה לגובה הברך השנייה, 2 שניות למעלה, יורדים לאט. חזרות לכל רגל.", knee:"מחזק את השריר שמעל הברך בלי לכופף אותה."},
+  bridge:{n:"גשר ישבן", how:"שכיבה על הגב, ברכיים כפופות, כפות רגליים על הרצפה. מרימים אגן, 2 שניות למעלה, יורדים לאט."},
+  pulldown:{n:"משיכה בפולי עליון", how:"בישיבה, מושכים את המוט לגובה החזה, מרפקים למטה, גב זקוף."},
+  row:{n:"חתירה במכונה בישיבה", how:"גב זקוף, מושכים את הידיות לכיוון הבטן ומקרבים שכמות."},
+  chest:{n:"לחיצת חזה במכונה", how:"דוחפים קדימה בנשיפה, חוזרים לאט. משקל שמאפשר עוד 3–4 חזרות בסוף."},
+  sitstand:{n:"קימה מספסל גבוה", how:"יושבים על ספסל גבוה, קמים (אפשר בעזרת הידיים) ומתיישבים לאט ככל האפשר.", knee:"רק אם לא כואב. ספסל גבוה יותר = קל יותר."},
+  wallplank:{n:"פלאנק על הקיר", how:"ידיים על הקיר בגובה הכתפיים, צעד אחורה, גוף ישר. מחזיקים 20 שניות ונושמים."},
+  stretch:{n:"מתיחות לסיום", how:"שוקיים מול הקיר, ירך אחורית בישיבה על ספסל, חזה בפתח דלת. 20–30 שניות לכל אחת, בלי קפיצות."}
+};
+const TL = {A:"א׳", B:"ב׳"};
+const PHASES = [
+  {from:1, to:2, name:"שלב 1 · להתרגל להגיע", minutes:20, perWeek:2,
+    cardio:[["bike",10]], sets:"סט אחד × 10 חזרות",
+    A:["legpress","pulldown","legraise"], B:["abduction","row","bridge"],
+    goal:"המטרה היחידה: להגיע, לעשות, ולצאת עם הרגשה שהיה אפשר עוד. לא מוסיפים כלום."},
+  {from:3, to:4, name:"שלב 2 · עוד קצת", minutes:25, perWeek:2,
+    cardio:[["bike",12]], sets:"2 סטים × 10 חזרות, דקה מנוחה ביניהם",
+    A:["legpress","pulldown","legraise","wallplank"], B:["abduction","row","bridge","chest"],
+    goal:"אותם תרגילים, סט נוסף. אם שלב 1 עוד הרגיש קשה — נשארים בו עוד שבוע, זה בסדר גמור."},
+  {from:5, to:8, name:"שלב 3 · בונים כוח", minutes:35, perWeek:3,
+    cardio:[["bike",15]], sets:"2 סטים × 12 חזרות",
+    A:["legpress","pulldown","legraise","wallplank","abduction"], B:["bridge","row","chest","sitstand","abduction"],
+    goal:"אימון שלישי בשבוע. כשסט של 12 מרגיש קל — מוסיפים את המשקל הקטן ביותר במכונה."},
+  {from:9, to:999, name:"שלב 4 · זו כבר שגרה", minutes:45, perWeek:3,
+    cardio:[["bike",10],["walk",10]], sets:"2–3 סטים × 12 חזרות",
+    A:["legpress","pulldown","legraise","wallplank","abduction","chest"], B:["bridge","row","sitstand","abduction","legraise","pulldown"],
+    goal:"אפשר להחליף את ההליכה באליפטיקל אם הברכיים מרגישות טוב. מכאן ממשיכים בשגרה ומעלים משקל בהדרגה."}
+];
+const GYM_RULES = [
+  ["כאב", "כאב קל (עד 3 מתוך 10) שעובר עד מחר — בסדר. כאב חד, או כזה שנשאר למחרת — מורידים משקל או מקצרים טווח. אם חוזר — עוצרים ומתייעצים."],
+  ["מה לא עושים בינתיים", "ריצה, קפיצות, לאנג׳ים, סקוואט עמוק ומכונת מדרגות."],
+  ["כמה קשה", "באירובי צריך להצליח לדבר במשפטים. בתרגילי כוח — משקל שאחרי הסט היה אפשר לעשות עוד 3–4 חזרות."],
+  ["מתי מתקדמים", "רק כשהשבוע הרגיש קל. שבוע עמוס, מחלה או הפסקה? חוזרים שלב אחד אחורה — זה חלק מהתוכנית, לא כישלון."],
+  ["לפני שמתחילים", "כדאי לעדכן את הרופא/ה המטפל/ת, בגלל הברכיים והתרופות הקבועות. באימון הראשון מבקשים ממדריך/ה בחדר הכושר לכוון לך את המכונות."],
+  ["מה לוקחים", "נעליים עם ריפוד, בקבוק מים, מגבת. אוכלים ארוחת בוקר קלה או ביניים לפני אם מתאמנים מאוחר יותר."]
+];
+
+/* ============ מצב ============ */
+const KEY = "meytal-week-v1";
+function loadState(){
+  let s = null;
+  try{ s = JSON.parse(localStorage.getItem(KEY)); }catch(e){}
+  if(!s || !s.checks) s = { checks:{}, shop:{}, gymTime:"07:00" };
+  s.over = s.over || {};     // שינוי לארוחה ביום מסוים
+  s.hidden = s.hidden || {}; // מנות שהוצאו מהסבב
+  s.custom = s.custom || {}; // מנות שהוספתי
+  s.gymStart = s.gymStart || "2026-09-13"; // השבוע שבו התחילה תוכנית האימונים
+  return s;
+}
+let S = loadState();
+
+/* ============ ארוחות — סבב ועריכה ============ */
+const SLOTS = {
+  breakfast:{label:"ארוחת בוקר", src:BREAKFASTS, extra:() => "2 פריכיות, קוטג׳ ועגבנייה"},
+  snackAm:{label:"ביניים של בוקר", src:SNACKS_AM},
+  lunch:{label:"ארוחת צהריים", src:LUNCHES, extra:d => d.side},
+  snackPm:{label:"ביניים של אחר הצהריים", src:SNACKS_PM},
+  dinner:{label:"ארוחת ערב", src:DINNERS, extra:d => `${DINNER_BASE_TEXT} + ${d.d}`}
+};
+for(const slot in SLOTS) SLOTS[slot].src.forEach((d,i) => d.id = `${slot}-${i}`);
+const allDishes = slot => [...SLOTS[slot].src, ...(S.custom[slot]||[])];
+function pool(slot){
+  const h = S.hidden[slot] || [], p = allDishes(slot).filter(d => !h.includes(d.id));
+  return p.length ? p : allDishes(slot);
+}
+function findDish(slot, id){
+  const other = slot === "snackAm" ? "snackPm" : slot === "snackPm" ? "snackAm" : null;
+  return allDishes(slot).find(d => d.id === id) || (other && allDishes(other).find(d => d.id === id)) || null;
+}
+function dishExtra(slot, dish){
+  if(dish.i) return SLOTS[slot].extra ? SLOTS[slot].extra(dish) : "";
+  return dish.ingText || "";
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+
+/* ============ תאריכים ============ */
+const pad = n => String(n).padStart(2,"0");
+const iso = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const parse = s => { const [y,m,d] = s.split("-").map(Number); return new Date(y, m-1, d); };
+const addDays = (d,n) => { const x = new Date(d); x.setDate(x.getDate()+n); return x; };
+const sundayOf = d => addDays(new Date(d.getFullYear(), d.getMonth(), d.getDate()), -d.getDay());
+const weeksBetween = (a,b) => Math.round((b - a) / (7*864e5));
+const fmt = d => `${d.getDate()}.${d.getMonth()+1}`;
+
+const today = new Date();
+let weekStart = sundayOf(today);
+let selDay = today.getDay();
+let tab = "day";
+
+let monthCur = new Date(today.getFullYear(), today.getMonth(), 1);
+const MONTHS = ["ינואר","פברואר","מרץ","אפריל","מאי","יוני","יולי","אוגוסט","ספטמבר","אוקטובר","נובמבר","דצמבר"];
+
+// סבב קבוע: השבוע של 13.9.2026 — מלחה בשלישי–חמישי; השבוע שאחריו — מלחה בראשון, שני, שישי ושבת; וחוזר חלילה
+function modeFor(sunday){
+  const diff = weeksBetween(parse(BASE_WEEK), sunday);
+  return ((diff % 2) + 2) % 2 === 0 ? "lior" : "meytal";
+}
+function placeFor(sunday, dayIdx){
+  return MALCHA_DAYS[modeFor(sunday)].includes(dayIdx) ? "malcha" : "arnona";
+}
+function phaseFor(n){ return n < 1 ? null : PHASES.find(p => n >= p.from && n <= p.to); }
+// מפזר את האימונים של השבוע על ימי הארנונה, עם יום מנוחה ביניהם כשאפשר
+function gymWeek(sunday){
+  const n = weeksBetween(parse(S.gymStart), sunday) + 1, ph = phaseFor(n), days = {};
+  if(!ph) return {n, ph, days};
+  const ar = [0,1,2,3,4,5,6].filter(i => placeFor(sunday, i) === "arnona");
+  const k = Math.min(ph.perWeek, ar.length);
+  for(let j=0;j<k;j++) days[ar[Math.round(j * ar.length / k)]] = ((n - 1 + j) % 2) ? "B" : "A";
+  return {n, ph, days};
+}
+function workoutSummary(ph, type){
+  const cardio = ph.cardio.map(([e,m]) => `${EX[e].n.split(" (")[0]} ${m} דק׳`).join(" + ");
+  return `${cardio} · ${ph[type].length} תרגילים · מתיחות`;
+}
+function workoutHTML(ph, type){
+  const exRow = (id, dose) => `<details class="rc"><summary><span>${EX[id].n}</span><span class="t">${dose}</span></summary>
+    <div class="rcbody"><div>${EX[id].how}</div>${EX[id].knee ? `<div class="note">🦵 ${EX[id].knee}</div>` : ""}</div></details>`;
+  return `
+    <h4 class="wh">1 · חימום ואירובי</h4>${ph.cardio.map(([e,m]) => exRow(e, `${m} דק׳`)).join("")}
+    <h4 class="wh">2 · כוח — ${ph.sets}</h4>${ph[type].map(e => exRow(e, e==="wallplank" ? "20 שנ׳" : "")).join("")}
+    <h4 class="wh">3 · סיום</h4>${exRow("stretch", "5 דק׳")}`;
+}
+function openWorkout(dIso){
+  const d = parse(dIso), g = gymWeek(sundayOf(d)), type = g.days[d.getDay()];
+  if(!g.ph || !type) return;
+  const done = !!S.checks[`${dIso}:gym`];
+  editing = {workout:dIso};
+  $("sheetBody").innerHTML = `
+    <div class="sheethead">
+      <div><h3>אימון ${TL[type]} · ${g.ph.minutes} דק׳</h3><div class="note">יום ${DAY_NAMES[d.getDay()]}, ${fmt(d)} · ${g.ph.name}</div></div>
+      <button class="iconbtn" id="edCancel" aria-label="סגירה">✕</button>
+    </div>
+    <p class="note" style="margin:0">${g.ph.goal}</p>
+    ${workoutHTML(g.ph, type)}
+    <div class="row"><button class="btn" id="wDone">${done ? "✓ סומן — לבטל סימון" : "סיימתי את האימון"}</button></div>`;
+  $("sheet").hidden = false;
+  document.body.style.overflow = "hidden";
+}
+
+function renderGym(){
+  const g = gymWeek(weekStart), start = parse(S.gymStart);
+  const totalDone = Object.keys(S.checks).filter(k => {
+    if(!k.endsWith(":gym")) return false;
+    const d = parse(k.slice(0,10)); return !!gymWeek(sundayOf(d)).days[d.getDay()];
+  }).length;
+  const weekSessions = Object.entries(g.days);
+  const weekDone = weekSessions.filter(([i]) => S.checks[`${iso(addDays(weekStart,+i))}:gym`]).length;
+  const nextMilestone = [4,8,12,24,36,52,100].find(m => m > totalDone);
+  const thisWeek = g.ph ? weekSessions.map(([i,type]) => {
+    const d = addDays(weekStart,+i), di = iso(d), on = !!S.checks[`${di}:gym`];
+    return `<button class="wkday" data-workout="${di}"><div class="h"><b>${DAY_NAMES[i]} <span class="mono" style="font-weight:500;color:var(--muted)">${fmt(d)}</span></b><span class="tag ${on?"malcha":"arnona"}">${on?"✓ בוצע":`אימון ${TL[type]}`}</span></div>
+      <div class="ln">${workoutSummary(g.ph, type)}</div></button>`;
+  }).join("") : `<p class="note">התוכנית מתחילה בשבוע של ${fmt(start)}.</p>`;
+  const phases = PHASES.map(ph => `<details class="rc"${g.ph===ph?" open":""}>
+      <summary><span>${ph.name}${g.ph===ph?' <span class="edited">עכשיו</span>':""}</span><span class="t">${ph.to>100?`משבוע ${ph.from}`:`שבועות ${ph.from}–${ph.to}`}</span></summary>
+      <div class="rcbody">
+        <div class="note">${ph.perWeek} אימונים בשבוע · ${ph.minutes} דק׳ · ${ph.sets}</div>
+        <div>${ph.goal}</div>
+        <div><b>אימון א׳:</b> ${ph.A.map(e=>EX[e].n).join(" · ")}</div>
+        <div><b>אימון ב׳:</b> ${ph.B.map(e=>EX[e].n).join(" · ")}</div>
+      </div></details>`).join("");
+  const pct = g.n < 1 ? 0 : Math.min(100, Math.round(g.n/12*100));
+  $("view-gym").innerHTML = `
+    <div class="dayhead"><h2>תוכנית כושר</h2>${g.ph ? `<span class="place arnona">${g.ph.name.split(" · ")[0]} · שבוע ${g.n}</span>` : ""}</div>
+    <div class="progress" aria-label="התקדמות ב-12 השבועות הראשונים"><i style="width:${pct}%"></i></div>
+    <div class="stats">
+      <div class="stat"><b>${weekDone}/${weekSessions.length}</b><span>אימונים השבוע</span></div>
+      <div class="stat"><b>${totalDone}</b><span>אימונים עד היום</span></div>
+      <div class="stat"><b>${nextMilestone}</b><span>היעד הבא</span></div>
+    </div>
+    <h3 style="font-size:18px">האימונים של השבוע</h3>
+    <div class="wk">${thisWeek}</div>
+    <p class="note" style="margin:0">בשאר ימי הארנונה: הליכה נינוחה או מנוחה. בימים במלחה — חופש.</p>
+    <h3 style="font-size:18px">השלבים</h3>
+    ${phases}
+    <div class="panel">
+      <h3>כללים ששומרים על הברכיים</h3>
+      ${GYM_RULES.map(([h,t]) => `<div><b>${h}</b><div class="note">${t}</div></div>`).join("")}
+    </div>
+    <div class="panel">
+      <h3>הגדרות</h3>
+      <label class="opt">התחלתי את התוכנית בשבוע של <input type="date" id="gymStart" value="${S.gymStart}"></label>
+      <p class="note" style="margin:0">הפסקת לתקופה? קובעים את שבוע ההתחלה מחדש, והתוכנית חוזרת לשלב 1.</p>
+    </div>`;
+}
+
+function rotationFor(sunday, dayIdx){
+  const w = ((weeksBetween(parse(BASE_WEEK), sunday) % 100) + 100) % 100;
+  const pick = (slot, n) => { const p = pool(slot); return p[n % p.length]; };
+  return {
+    breakfast: pick("breakfast", dayIdx + w),
+    snackAm: pick("snackAm", dayIdx + w),
+    lunch: pick("lunch", dayIdx + w*3),
+    snackPm: pick("snackPm", dayIdx*2 + w*5),
+    dinner: pick("dinner", dayIdx + w*2)
+  };
+}
+function planFor(sunday, dayIdx){
+  const base = rotationFor(sunday, dayIdx), dIso = iso(addDays(sunday, dayIdx)), plan = {edited:{}};
+  for(const slot in SLOTS){
+    const o = S.over[`${dIso}:${slot}`];
+    let dish = base[slot];
+    if(o && o.id){ const f = findDish(slot, o.id); if(f) dish = f; }
+    if(o && o.text) dish = {id:null, n:o.text, ingText:o.ing || ""};
+    plan[slot] = dish;
+    plan.edited[slot] = !!o && dish !== base[slot];
+  }
+  return plan;
+}
+function itemsFor(sunday, dayIdx){
+  const p = planFor(sunday, dayIdx), place = placeFor(sunday, dayIdx), out = [];
+  const meal = (slot, time, kind) => out.push({id:slot, slot, time, kind, what:p[slot].n, extra:dishExtra(slot, p[slot]), r:p[slot].r, edited:p.edited[slot]});
+  if(place === "arnona"){
+    const g = gymWeek(sunday), type = g.days[dayIdx], dIso = iso(addDays(sunday, dayIdx));
+    if(g.ph && type) out.push({id:"gym", time:S.gymTime, kind:`חדר כושר · שבוע ${g.n}`, cls:"gym", what:`אימון ${TL[type]} · ${g.ph.minutes} דק׳`, extra:workoutSummary(g.ph, type), workout:dIso});
+    else if(g.ph) out.push({id:"gym", time:S.gymTime, kind:"תנועה קלה", cls:"gym", what:"הליכה נינוחה 15 דק׳ — או מנוחה", extra:"יום בארנונה בלי אימון. גם מנוחה היא חלק מהתוכנית."});
+    else out.push({id:"gym", time:S.gymTime, kind:"חדר כושר", cls:"gym", what:"התוכנית עוד לא התחילה", extra:"אפשר לקבוע את שבוע ההתחלה בלשונית כושר"});
+  }
+  out.push({id:"medsAm", time:"08:00", kind:"תרופות בוקר", cls:"meds", what:"לקחת תרופות", pills:MEDS_AM});
+  meal("breakfast", "08:15", "בוקר");
+  meal("snackAm", "10:30", "ביניים");
+  meal("lunch", "13:00", "צהריים");
+  meal("snackPm", "16:30", "ביניים");
+  meal("dinner", "19:00", "ערב");
+  out.push({id:"medsPm", time:"20:00", kind:"תרופות ערב", cls:"meds", what:"לקחת תרופות", pills:MEDS_PM});
+  out.sort((a,b) => a.time.localeCompare(b.time));
+  return out;
+}
+
+/* ============ תצוגה ============ */
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function renderHeader(){
+  const end = addDays(weekStart, 6);
+  const isMonth = tab === "month";
+  $("weekLabel").textContent = isMonth ? `${MONTHS[monthCur.getMonth()]} ${monthCur.getFullYear()}` : `שבוע ${fmt(weekStart)}–${fmt(end)}`;
+  $("prevWeek").setAttribute("aria-label", isMonth ? "חודש קודם" : "שבוע קודם");
+  $("nextWeek").setAttribute("aria-label", isMonth ? "חודש הבא" : "שבוע הבא");
+  $("strip").hidden = $("weekPlace").hidden = isMonth;
+  const m = modeFor(weekStart);
+  $("weekPlace").innerHTML = m === "lior"
+    ? `<span>מלחה: <b style="color:var(--malcha)">ג׳ ד׳ ה׳</b> · ארנונה: <b style="color:var(--arnona)">א׳ ב׳ ו׳ ש׳</b></span>`
+    : `<span>מלחה: <b style="color:var(--malcha)">א׳ ב׳ ו׳ ש׳</b> · ארנונה: <b style="color:var(--arnona)">ג׳ ד׳ ה׳</b></span>`;
+  const todayIso = iso(today);
+  $("strip").innerHTML = DAY_SHORT.map((n,i) => {
+    const d = addDays(weekStart, i);
+    const cur = i === selDay ? ' aria-current="date"' : "";
+    return `<button class="dayp ${placeFor(weekStart,i)}${iso(d)===todayIso?" today":""}" data-day="${i}"${cur} aria-label="יום ${DAY_NAMES[i]} ${fmt(d)}"><span class="dn">${n}</span><span class="dd mono">${d.getDate()}</span><span class="loc"></span></button>`;
+  }).join("");
+}
+
+function renderDay(){
+  const d = addDays(weekStart, selDay), dIso = iso(d), place = placeFor(weekStart, selDay);
+  const items = itemsFor(weekStart, selDay);
+  const done = items.filter(it => S.checks[`${dIso}:${it.id}`]).length;
+  $("view-day").innerHTML = `
+    <div class="dayhead">
+      <h2>יום ${DAY_NAMES[selDay]}, ${fmt(d)}</h2>
+      <span class="place ${place}">${place === "malcha" ? "במלחה" : "בארנונה · חדר כושר"}</span>
+    </div>
+    <div class="progress" aria-label="${done} מתוך ${items.length} בוצעו"><i style="width:${Math.round(done/items.length*100)}%"></i></div>
+    <ul class="timeline">${items.map(it => {
+      const on = !!S.checks[`${dIso}:${it.id}`];
+      return `<li class="item ${it.cls||""}${on?" is-done":""}">
+        <span class="time mono">${it.time}</span>
+        <div>
+          <div class="kind">${it.kind}${it.edited ? ` <span class="edited">שיניתי</span>` : ""}</div>
+          <div class="what">${esc(it.what)}</div>
+          ${it.extra ? `<div class="extra">${esc(it.extra)}</div>` : ""}
+          ${it.pills ? `<div class="pills">${it.pills.map(p => `<span class="pill">${p}</span>`).join("")}</div>` : ""}
+          ${it.workout ? `<div class="acts"><button class="linkbtn" style="color:var(--arnona)" data-workout="${it.workout}">לתרגילים של היום</button></div>` : ""}
+          ${it.slot ? `<div class="acts"><button class="linkbtn" data-edit="${dIso}|${it.slot}">✎ עריכה</button>${it.r ? `<button class="linkbtn" data-recipe="${it.r}">למתכון</button>` : ""}</div>` : ""}
+        </div>
+        <button class="check" data-check="${dIso}:${it.id}" aria-pressed="${on}" aria-label="סימון: ${esc(it.what)}">✓</button>
+      </li>`;}).join("")}
+    </ul>`;
+}
+
+function renderWeek(){
+  const days = DAY_NAMES.map((name,i) => {
+    const p = planFor(weekStart,i), place = placeFor(weekStart,i), d = addDays(weekStart,i);
+    return `<button class="wkday" data-goday="${i}">
+      <div class="h"><b>${name} <span class="mono" style="font-weight:500;color:var(--muted)">${fmt(d)}</span></b><span class="tag ${place}">${place==="malcha"?"מלחה":"ארנונה · כושר"}</span></div>
+      <div class="ln">בוקר: <span>${esc(p.breakfast.n)}</span></div>
+      <div class="ln">צהריים: <span>${esc(p.lunch.n)}</span></div>
+      <div class="ln">ביניים: <span>${esc(p.snackAm.n)} · ${esc(p.snackPm.n)}</span></div>
+      <div class="ln">ערב: <span>${esc(p.dinner.n)}</span></div>
+    </button>`;
+  }).join("");
+  $("view-week").innerHTML = `
+    <div class="dayhead"><h2>התפריט השבועי</h2></div>
+    <p class="note" style="margin:0">לוחצים על יום ואז „עריכה״ ליד ארוחה כדי להחליף אותה.</p>
+    <div class="wk">${days}</div>
+    ${renderPoolManager()}
+    <div class="panel">
+      <h3>תזכורות בטלפון</h3>
+      <p class="note" style="margin:0">דף אינטרנט לא יכול לצלצל כשהוא סגור, ולכן התזכורות נכנסות ליומן של הטלפון. לוחצים, פותחים את הקובץ ומוסיפים ליומן — ההתראה תקפוץ בזמן.</p>
+      <label class="opt"><input type="checkbox" id="icsMeals"> להוסיף גם ארוחות וביניים</label>
+      <div class="row">
+        <button class="btn" id="icsWeek">תזכורות לשבוע הזה</button>
+        <button class="btn ghost" id="icsMeds">תרופות — כל יום, קבוע</button>
+      </div>
+      <p class="note" style="margin:0">„תרופות קבוע״ מוסיף פעם אחת תזכורת יומית ל-08:00 ול-20:00 בלי תאריך סיום. „לשבוע הזה״ מוסיף גם את חדר הכושר בימי ארנונה — כדאי להוריד כל שבוע.</p>
+    </div>
+    <div class="panel">
+      <h3>הגדרות</h3>
+      <label class="opt">שעת חדר כושר <input type="time" id="gymTime" value="${S.gymTime}"></label>
+      <p class="note" style="margin:0">הסבב מתחלף כל שבוע: שבוע אחד מלחה בשלישי–חמישי (וארנונה בראשון, שני, שישי ושבת), ובשבוע שאחריו מלחה בראשון, שני, שישי ושבת (וארנונה בשלישי–חמישי).</p>
+    </div>`;
+}
+
+function renderPoolManager(){
+  const sections = Object.entries(SLOTS).map(([slot, s]) => {
+    const hidden = S.hidden[slot] || [];
+    const rows = allDishes(slot).map(d => {
+      const on = !hidden.includes(d.id), mine = !d.i;
+      return `<div class="poolrow">
+        <label class="opt" style="flex:1"><input type="checkbox" data-pool="${slot}|${d.id}" ${on?"checked":""}> <span${on?"":' style="color:var(--done);text-decoration:line-through"'}>${esc(d.n)}</span>${mine?' <span class="edited">שלי</span>':""}</label>
+        ${mine ? `<button class="linkbtn" data-delcustom="${slot}|${d.id}" style="color:var(--arnona)">מחיקה</button>` : ""}
+      </div>`;
+    }).join("");
+    return `<details class="rc">
+      <summary><span>${s.label}</span><span class="t">${pool(slot).length} בסבב</span></summary>
+      <div class="rcbody">
+        ${rows}
+        <div class="addform">
+          <input type="text" id="new-${slot}" placeholder="שם מנה חדשה">
+          <input type="text" id="newing-${slot}" placeholder="מצרכים לקניות, מופרדים בפסיק (לא חובה)">
+          <button class="btn" data-addcustom="${slot}">הוספה לסבב</button>
+        </div>
+      </div>
+    </details>`;
+  }).join("");
+  return `<div class="panel">
+    <h3>המנות שלי בסבב</h3>
+    <p class="note" style="margin:0">מורידים סימון ממנה שלא רוצים, והיא לא תוצע יותר. מנה חדשה נכנסת לסבב של כל השבועות.</p>
+    ${sections}
+  </div>`;
+}
+
+/* חלון עריכה לארוחה ביום מסוים */
+let editing = null;
+function openEditor(dIso, slot){
+  const d = parse(dIso), sun = sundayOf(d), di = d.getDay();
+  const base = rotationFor(sun, di)[slot], current = planFor(sun, di)[slot];
+  const o = S.over[`${dIso}:${slot}`];
+  editing = {dIso, slot, baseId: base.id};
+  const opt = (dish, note) => `<label class="pick"><input type="radio" name="edPick" value="${dish.id}" ${current.id===dish.id && !(o && o.text) ? "checked" : ""}>
+      <span><b>${esc(dish.n)}</b>${note ? `<span class="note"> · ${note}</span>` : ""}${dishExtra(slot,dish) ? `<br><span class="note">${esc(dishExtra(slot,dish))}</span>` : ""}</span></label>`;
+  const hidden = S.hidden[slot] || [];
+  const list = (s, title) => (title ? `<h4>${title}</h4>` : "") + allDishes(s).map(x => opt(x, x.id===base.id ? "ההצעה המקורית" : hidden.includes(x.id) ? "לא בסבב" : "")).join("");
+  const options = slot.startsWith("snack")
+    ? list(slot, slot==="snackAm" ? "עם יוגורט" : "לגיוון") + list(slot==="snackAm" ? "snackPm" : "snackAm", slot==="snackAm" ? "לגיוון" : "עם יוגורט")
+    : list(slot);
+  const txt = o && o.text ? o : {text:"", ing:""};
+  $("sheetBody").innerHTML = `
+    <div class="sheethead">
+      <div><h3>${SLOTS[slot].label}</h3><div class="note">יום ${DAY_NAMES[di]}, ${fmt(d)}</div></div>
+      <button class="iconbtn" id="edCancel" aria-label="סגירה">✕</button>
+    </div>
+    <div class="picks">
+      ${options}
+      <h4>משהו אחר</h4>
+      <div class="pick"><input type="radio" name="edPick" value="__text" aria-label="משהו אחר" ${o && o.text ? "checked" : ""}>
+        <span style="display:grid;gap:6px;flex:1">
+          <input type="text" id="edText" placeholder="מה אוכלים? למשל: שקשוקה עם פטה" value="${esc(txt.text)}">
+          <input type="text" id="edIng" placeholder="מצרכים לקניות, מופרדים בפסיק (לא חובה)" value="${esc(txt.ing)}">
+          <label class="opt"><input type="checkbox" id="edAddPool"> להוסיף גם לסבב הקבוע</label>
+        </span>
+      </div>
+    </div>
+    <label class="opt"><input type="checkbox" id="edHideOrig"> לא להציע יותר את „${esc(base.n)}״</label>
+    <div class="row">
+      <button class="btn" id="edSave">שמירה</button>
+      ${o ? `<button class="btn ghost" id="edReset">חזרה להצעה המקורית</button>` : ""}
+    </div>`;
+  const pickText = () => { document.querySelector('input[name=edPick][value="__text"]').checked = true; };
+  $("edText").addEventListener("focus", pickText);
+  $("edIng").addEventListener("focus", pickText);
+  $("edAddPool").addEventListener("change", pickText);
+  $("sheet").hidden = false;
+  document.body.style.overflow = "hidden";
+}
+function closeEditor(){ $("sheet").hidden = true; document.body.style.overflow = ""; editing = null; }
+function saveEditor(){
+  const {dIso, slot, baseId} = editing, key = `${dIso}:${slot}`;
+  const sel = document.querySelector("input[name=edPick]:checked");
+  if(!sel){ toast("בחרי מנה או כתבי משהו אחר"); return; }
+  if(sel.value === "__text"){
+    const text = $("edText").value.trim(), ing = $("edIng").value.trim();
+    if(!text){ toast("כתבי מה אוכלים"); $("edText").focus(); return; }
+    if($("edAddPool").checked){
+      const dish = {id:`c${Date.now()}`, n:text, ingText:ing};
+      (S.custom[slot] = S.custom[slot] || []).push(dish);
+      S.over[key] = {id:dish.id};
+    } else S.over[key] = {text, ing};
+  } else if(sel.value === baseId) delete S.over[key];
+  else S.over[key] = {id:sel.value};
+  if($("edHideOrig").checked){
+    const h = S.hidden[slot] = S.hidden[slot] || [];
+    if(!h.includes(baseId)) h.push(baseId);
+    if(S.over[key] && S.over[key].id === baseId) delete S.over[key];
+  }
+  closeEditor(); render(); toast("נשמר");
+}
+
+function shopKey(){ return iso(weekStart); }
+function buildShopping(){
+  const tot = {}, mine = {};
+  const add = obj => { for(const k in obj) tot[k] = (tot[k]||0) + obj[k]; };
+  for(let i=0;i<7;i++){
+    const p = planFor(weekStart,i);
+    for(const slot in SLOTS){
+      const dish = p[slot];
+      if(dish.i){
+        if(slot === "breakfast") add(BREAKFAST_BASE);
+        if(slot === "dinner") add(DINNER_BASE);
+        add(dish.i);
+      } else if(dish.ingText){
+        dish.ingText.split(/[,،\n]/).map(x => x.trim()).filter(Boolean).forEach(x => mine[x] = (mine[x]||0) + 1);
+      }
+    }
+  }
+  for(const k of ALWAYS) tot[k] = Math.max(tot[k]||0, 1);
+  const groups = {};
+  const mineRows = Object.entries(mine).map(([n,c]) => ({k:"m:"+n, n, txt: c > 1 ? `×${c}` : ""}));
+  if(mineRows.length) groups.mine = mineRows;
+  for(const k in tot){
+    const g = ING[k]; let q = tot[k], txt;
+    if(ALWAYS.includes(k)) g.d = "always";
+    if(g.u === "גרם"){ q = Math.max(50, Math.ceil(q/50)*50); txt = q >= 1000 ? `${(q/1000).toFixed(q%1000?1:0)} ק״ג` : `${q} גרם`; }
+    else { q = Math.ceil(q - 0.05); txt = `${q} ${g.u}`; }
+    (groups[g.d] = groups[g.d] || []).push({k, n:g.n, txt});
+  }
+  return groups;
+}
+function renderShop(){
+  const st = S.shop[shopKey()] = S.shop[shopKey()] || {got:{}, extra:[]};
+  const groups = buildShopping();
+  let all = 0, got = 0, text = [`קניות לשבוע ${fmt(weekStart)}`];
+  const row = (id, name, q) => { all++; const on = !!st.got[id]; if(on) got++;
+    return `<label class="shop${on?" got":""}"><input type="checkbox" data-shop="${esc(id)}" ${on?"checked":""}><span class="n">${esc(name)}</span><span class="q mono">${esc(q)}</span></label>`; };
+  const html = Object.keys(DEPTS).filter(d => groups[d]).map(d => {
+    text.push(`\n${DEPTS[d]}:`);
+    const rows = groups[d].sort((a,b)=> d==="mine" ? 0 : d==="always" ? ALWAYS.indexOf(a.k)-ALWAYS.indexOf(b.k) : a.n.localeCompare(b.n,"he")).map(x => { text.push(`• ${x.n} — ${x.txt}`); return row(x.k, x.n, x.txt); }).join("");
+    return `<div class="dept"><h3>${DEPTS[d]}</h3>${rows}</div>`;
+  }).join("");
+  const extra = st.extra.length ? `<div class="dept"><h3>הוספתי בעצמי</h3>${st.extra.map((x,i)=>{ text.push(`• ${x}`); return row("x:"+x, x, ""); }).join("")}</div>` : "";
+  const staples = `<div class="dept"><h3>לוודא שיש בבית</h3>${STAPLES.map(s => row("s:"+s, s, "")).join("")}</div>`;
+  renderShop.text = text.join("\n");
+  $("view-shop").innerHTML = `
+    <div class="dayhead"><h2>רשימת קניות</h2><span class="note mono">${got}/${all}</span></div>
+    <div class="progress"><i style="width:${all?Math.round(got/all*100):0}%"></i></div>
+    <p class="note" style="margin:0">מחושב מהתפריט של השבוע ${fmt(weekStart)}–${fmt(addDays(weekStart,6))}. הכמויות למנה אחת ליום.</p>
+    <div class="row">
+      <input type="text" id="extraItem" placeholder="להוסיף פריט…" style="flex:1;min-width:0">
+      <button class="btn" id="addExtra">הוספה</button>
+    </div>
+    ${html}${extra}${staples}
+    <div class="row">
+      <button class="btn" id="shareShop">שליחה בוואטסאפ</button>
+      <button class="btn ghost" id="copyShop">העתקה</button>
+      <button class="btn ghost" id="resetShop">ניקוי סימונים</button>
+    </div>`;
+}
+
+let recipeSub = "recipes";
+function renderRecipes(openId){
+  const cats = {prep:"הכנות לשבוע", breakfast:"בוקר", lunch:"צהריים", dinner:"ערב", snack:"ביניים"};
+  const rec = Object.keys(cats).map(c => {
+    const list = Object.entries(RECIPES).filter(([,r]) => r.cat === c);
+    return `<h3 style="font-size:17px;margin-top:6px">${cats[c]}</h3>` + list.map(([id,r]) => `
+      <details class="rc" id="rc-${id}"${id===openId?" open":""}>
+        <summary><span>${r.t}</span><span class="t">${r.time}</span></summary>
+        <div class="rcbody">
+          <b>מצרכים</b><ul>${r.ing.map(x=>`<li>${x}</li>`).join("")}</ul>
+          <b>הכנה</b><ol>${r.steps.map(x=>`<li>${x}</li>`).join("")}</ol>
+        </div>
+      </details>`).join("");
+  }).join("");
+  const snackRow = s => `<li><span>${s.n}</span>${s.r?`<button class="linkbtn" data-recipe="${s.r}">מתכון</button>`:""}</li>`;
+  const snacks = `
+    <h3 style="font-size:17px">עם יוגורט</h3><ul class="snacklist">${SNACKS_AM.map(snackRow).join("")}</ul>
+    <h3 style="font-size:17px">בלי יוגורט — לגיוון</h3><ul class="snacklist">${SNACKS_PM.map(snackRow).join("")}</ul>
+    <p class="note">כל רעיון כאן כבר נכנס לסבב: בוקר מקבלים ביניים עם יוגורט, אחר הצהריים ביניים אחרת, והתפריט מתחלף משבוע לשבוע.</p>`;
+  const salads = `
+    <p class="note" style="margin:0">הבסיס תמיד: ${DINNER_BASE_TEXT}. כל ערב מוסיפים משהו אחר:</p>
+    <ul class="snacklist">${DINNERS.map(s => `<li style="display:grid;gap:2px;justify-content:stretch"><b>${s.n}</b><span class="note">${s.d}</span>${s.r?`<button class="linkbtn" style="justify-self:start" data-recipe="${s.r}">לרטבים</button>`:""}</li>`).join("")}</ul>`;
+  const titles = {recipes:"מתכונים קלים", snacks:"רעיונות לביניים", salads:"סלטים לערב"};
+  $("view-recipes").innerHTML = `
+    <div class="dayhead"><h2>${titles[recipeSub]}</h2></div>
+    <div class="subtabs">
+      <button data-sub="recipes" aria-pressed="${recipeSub==="recipes"}">מתכונים</button>
+      <button data-sub="salads" aria-pressed="${recipeSub==="salads"}">סלטים</button>
+      <button data-sub="snacks" aria-pressed="${recipeSub==="snacks"}">ביניים</button>
+    </div>
+    ${recipeSub==="recipes" ? rec : recipeSub==="salads" ? salads : snacks}`;
+  if(openId){ const el = document.getElementById("rc-"+openId); if(el) el.scrollIntoView({block:"center"}); }
+}
+
+function renderMonth(){
+  const y = monthCur.getFullYear(), mo = monthCur.getMonth();
+  const first = new Date(y, mo, 1), start = sundayOf(first);
+  const last = new Date(y, mo+1, 0);
+  const cells = Math.ceil((weeksBetween(start, sundayOf(last)) + 1)) * 7;
+  const todayIso = iso(today);
+  let malcha = 0, gym = 0, medsDays = 0, pastDays = 0, html = "";
+  for(let i=0;i<cells;i++){
+    const d = addDays(start, i), sun = sundayOf(d), di = d.getDay(), place = placeFor(sun, di), dIso = iso(d);
+    const inMonth = d.getMonth() === mo;
+    const medsOk = S.checks[`${dIso}:medsAm`] && S.checks[`${dIso}:medsPm`];
+    if(inMonth){
+      if(place === "malcha") malcha++; else gym++;
+      if(dIso <= todayIso){ pastDays++; if(medsOk) medsDays++; }
+    }
+    html += `<button class="mcell ${place}${inMonth?"":" out"}${dIso===todayIso?" today":""}" data-date="${dIso}" aria-label="${DAY_NAMES[di]} ${fmt(d)}, ${place==="malcha"?"מלחה":"ארנונה"}">
+      <span class="num mono">${d.getDate()}</span><span>${place==="malcha"?"מלחה":"כושר"}</span><span class="ok">${medsOk?"💊✓":""}</span></button>`;
+  }
+  $("view-month").innerHTML = `
+    <div class="legend"><span><i style="background:var(--malcha)"></i>מלחה</span><span><i style="background:var(--arnona)"></i>ארנונה + חדר כושר</span><span>💊✓ תרופות בוקר וערב סומנו</span></div>
+    <div class="mgrid">${DAY_SHORT.map(n=>`<div class="mh">${n}</div>`).join("")}${html}</div>
+    <div class="stats">
+      <div class="stat"><b>${malcha}</b><span>ימים במלחה</span></div>
+      <div class="stat"><b>${gym}</b><span>ימי חדר כושר</span></div>
+      <div class="stat"><b>${medsDays}/${pastDays}</b><span>ימים עם כל התרופות</span></div>
+    </div>
+    <p class="note" style="margin:0">לוחצים על יום כדי לראות את התפריט והתרופות שלו.</p>`;
+}
+
+function render(){
+  renderHeader();
+  document.querySelector(".weekbar").hidden = tab === "month";
+  for(const t of ["day","week","month","shop","gym","recipes"]) $("view-"+t).hidden = t !== tab;
+  if(tab==="gym") renderGym();
+  document.querySelectorAll("nav.tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === tab));
+  if(tab==="day") renderDay();
+  if(tab==="week") renderWeek();
+  if(tab==="month") renderMonth();
+  if(tab==="shop") renderShop();
+  if(tab==="recipes") renderRecipes();
+  save();
+}
+
+function toast(msg){ const t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(()=>t.hidden=true, 2200); }
+
+/* ============ קובץ תזכורות ליומן ============ */
+function icsEsc(s){ return s.replace(/[\\,;]/g, m => "\\"+m); }
+function stamp(d, hhmm){ const [h,m] = hhmm.split(":"); return `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}T${h}${m}00`; }
+function vevent(uid, d, time, title, desc, rrule){
+  const now = new Date(), dt = `${now.getUTCFullYear()}${pad(now.getUTCMonth()+1)}${pad(now.getUTCDate())}T${pad(now.getUTCHours())}${pad(now.getUTCMinutes())}00Z`;
+  const [h,m] = time.split(":").map(Number); const endM = h*60+m+15;
+  const end = `${stamp(d, `${pad(Math.floor(endM/60)%24)}:${pad(endM%60)}`)}`;
+  return ["BEGIN:VEVENT",`UID:${uid}@hashavua-sheli`,`DTSTAMP:${dt}`,`DTSTART;TZID=Asia/Jerusalem:${stamp(d,time)}`,`DTEND;TZID=Asia/Jerusalem:${end}`,
+    rrule||null, `SUMMARY:${icsEsc(title)}`, desc?`DESCRIPTION:${icsEsc(desc)}`:null,
+    "BEGIN:VALARM","ACTION:DISPLAY",`DESCRIPTION:${icsEsc(title)}`,"TRIGGER:PT0M","END:VALARM","END:VEVENT"].filter(Boolean);
+}
+function downloadIcs(name, events){
+  const body = ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//hashavua-sheli//HE","CALSCALE:GREGORIAN","METHOD:PUBLISH", ...events.flat(), "END:VCALENDAR"].join("\r\n");
+  const url = URL.createObjectURL(new Blob([body], {type:"text/calendar;charset=utf-8"}));
+  const a = document.createElement("a"); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 4000);
+  toast("הקובץ ירד — פותחים אותו ומוסיפים ליומן");
+}
+function icsWeek(){
+  const meals = $("icsMeals") && $("icsMeals").checked, ev = [];
+  for(let i=0;i<7;i++){
+    const d = addDays(weekStart,i), di = iso(d);
+    for(const it of itemsFor(weekStart,i)){
+      const isMeal = !it.cls;
+      if(isMeal && !meals) continue;
+      const title = it.cls==="meds" ? `💊 ${it.kind}: ${it.pills.join(", ")}` : it.cls==="gym" ? `🏋️ ${it.what}` : `${it.kind}: ${it.what}`;
+      ev.push(vevent(`${di}-${it.id}`, d, it.time, title, it.extra||""));
+    }
+  }
+  downloadIcs(`תזכורות-${fmt(weekStart)}.ics`, ev);
+}
+function icsMeds(){
+  const d = today;
+  downloadIcs("תרופות-כל-יום.ics", [
+    vevent("meds-am-daily", d, "08:00", `💊 תרופות בוקר: ${MEDS_AM.join(", ")}`, "", "RRULE:FREQ=DAILY"),
+    vevent("meds-pm-daily", d, "20:00", `💊 תרופות ערב: ${MEDS_PM.join(", ")}`, "", "RRULE:FREQ=DAILY")
+  ]);
+}
+
+/* ============ אירועים ============ */
+document.addEventListener("click", async e => {
+  if(e.target.id === "sheet"){ closeEditor(); return; }
+  const t = e.target.closest("button, input[type=checkbox]");
+  if(!t) return;
+  if(t.dataset.workout){ openWorkout(t.dataset.workout); return; }
+  if(t.id === "wDone" && editing && editing.workout){
+    const k = `${editing.workout}:gym`;
+    if(S.checks[k]) delete S.checks[k]; else S.checks[k] = 1;
+    const wasDone = !!S.checks[k]; closeEditor(); render(); if(wasDone) toast("כל הכבוד! עוד אימון בפנים 💪");
+    return;
+  }
+  if(t.dataset.edit){ const [dIso, slot] = t.dataset.edit.split("|"); openEditor(dIso, slot); return; }
+  if(t.dataset.pool){
+    const [slot, id] = t.dataset.pool.split("|"), h = S.hidden[slot] = S.hidden[slot] || [];
+    if(t.checked) S.hidden[slot] = h.filter(x => x !== id);
+    else { if(allDishes(slot).length - h.length <= 1){ t.checked = true; toast("צריך להשאיר לפחות מנה אחת בסבב"); return; } h.push(id); }
+    const open = [...document.querySelectorAll("#view-week details.rc")].map(x => x.open);
+    render(); document.querySelectorAll("#view-week details.rc").forEach((x,i) => x.open = open[i]);
+    return;
+  }
+  if(t.dataset.delcustom){
+    const [slot, id] = t.dataset.delcustom.split("|");
+    S.custom[slot] = (S.custom[slot]||[]).filter(d => d.id !== id);
+    for(const k in S.over) if(S.over[k].id === id) delete S.over[k];
+    const open = [...document.querySelectorAll("#view-week details.rc")].map(x => x.open);
+    render(); document.querySelectorAll("#view-week details.rc").forEach((x,i) => x.open = open[i]); toast("המנה נמחקה");
+    return;
+  }
+  if(t.dataset.addcustom){
+    const slot = t.dataset.addcustom, n = $("new-"+slot).value.trim();
+    if(!n){ toast("כתבי שם למנה"); $("new-"+slot).focus(); return; }
+    (S.custom[slot] = S.custom[slot] || []).push({id:`c${Date.now()}`, n, ingText:$("newing-"+slot).value.trim()});
+    const open = [...document.querySelectorAll("#view-week details.rc")].map(x => x.open);
+    render(); document.querySelectorAll("#view-week details.rc").forEach((x,i) => x.open = open[i]); toast("נוסף לסבב");
+    return;
+  }
+  if(t.dataset.day){ selDay = +t.dataset.day; tab = "day"; render(); return; }
+  if(t.dataset.date){ const d = parse(t.dataset.date); weekStart = sundayOf(d); selDay = d.getDay(); tab = "day"; render(); window.scrollTo({top:0}); return; }
+  if(t.dataset.goday){ selDay = +t.dataset.goday; tab = "day"; render(); window.scrollTo({top:0}); return; }
+  if(t.dataset.tab){ tab = t.dataset.tab; render(); window.scrollTo({top:0}); return; }
+  if(t.dataset.check){ const k = t.dataset.check; if(S.checks[k]) delete S.checks[k]; else S.checks[k] = 1; render(); return; }
+  if(t.dataset.recipe){ tab = "recipes"; recipeSub = "recipes"; render(); renderRecipes(t.dataset.recipe); return; }
+  if(t.dataset.sub){ recipeSub = t.dataset.sub; renderRecipes(); return; }
+  if(t.dataset.shop !== undefined){ const st = S.shop[shopKey()]; if(t.checked) st.got[t.dataset.shop]=1; else delete st.got[t.dataset.shop]; renderShop(); save(); return; }
+  switch(t.id){
+    case "prevWeek": if(tab==="month") monthCur = new Date(monthCur.getFullYear(), monthCur.getMonth()-1, 1); else weekStart = addDays(weekStart,-7); render(); break;
+    case "nextWeek": if(tab==="month") monthCur = new Date(monthCur.getFullYear(), monthCur.getMonth()+1, 1); else weekStart = addDays(weekStart,7); render(); break;
+    case "todayBtn": weekStart = sundayOf(today); selDay = today.getDay(); monthCur = new Date(today.getFullYear(), today.getMonth(), 1); if(tab!=="month") tab = "day"; render(); break;
+    case "edSave": saveEditor(); break;
+    case "edCancel": closeEditor(); break;
+    case "edReset": delete S.over[`${editing.dIso}:${editing.slot}`]; closeEditor(); render(); toast("חזר להצעה המקורית"); break;
+    case "icsWeek": icsWeek(); break;
+    case "icsMeds": icsMeds(); break;
+    case "addExtra": { const v = $("extraItem").value.trim(); if(v){ S.shop[shopKey()].extra.push(v); renderShop(); save(); } break; }
+    case "resetShop": S.shop[shopKey()].got = {}; renderShop(); save(); toast("הסימונים נוקו"); break;
+    case "shareShop": window.open("https://wa.me/?text=" + encodeURIComponent(renderShop.text), "_blank"); break;
+    case "copyShop":
+      try{ await navigator.clipboard.writeText(renderShop.text); toast("הרשימה הועתקה"); }
+      catch(err){ const ta = document.createElement("textarea"); ta.value = renderShop.text; document.body.appendChild(ta); ta.select(); try{ document.execCommand("copy"); toast("הרשימה הועתקה"); }catch(_){ toast("לא הצלחתי להעתיק — אפשר לשלוח בוואטסאפ"); } ta.remove(); }
+      break;
+  }
+});
+document.addEventListener("change", e => {
+  if(e.target.id === "gymTime" && e.target.value){ S.gymTime = e.target.value; save(); }
+  if(e.target.id === "gymStart" && e.target.value){ S.gymStart = iso(sundayOf(parse(e.target.value))); render(); toast("שבוע ההתחלה עודכן"); }
+});
+document.addEventListener("keydown", e => { if(e.key === "Escape" && editing) closeEditor();if(e.key === "Enter" && e.target.id === "extraItem") $("addExtra").click(); });
+
+render();
+</script>
+</body>
+</html>
