@@ -428,19 +428,19 @@ const EX = {
 };
 const TL = {A:"א׳", B:"ב׳"};
 const PHASES = [
-  {from:1, to:2, name:"שלב 1 · להתרגל להגיע", minutes:20, perWeek:2,
+  {from:1, to:2, name:"שלב 1 · להתרגל להגיע", minutes:20,
     cardio:[["bike",10]], sets:"סט אחד × 10 חזרות",
     A:["legpress","pulldown","legraise"], B:["abduction","row","bridge"],
     goal:"המטרה היחידה: להגיע, לעשות, ולצאת עם הרגשה שהיה אפשר עוד. לא מוסיפים כלום."},
-  {from:3, to:4, name:"שלב 2 · עוד קצת", minutes:25, perWeek:2,
+  {from:3, to:4, name:"שלב 2 · עוד קצת", minutes:25,
     cardio:[["bike",12]], sets:"2 סטים × 10 חזרות, דקה מנוחה ביניהם",
     A:["legpress","pulldown","legraise","wallplank"], B:["abduction","row","bridge","chest"],
     goal:"אותם תרגילים, סט נוסף. אם שלב 1 עוד הרגיש קשה — נשארים בו עוד שבוע, זה בסדר גמור."},
-  {from:5, to:8, name:"שלב 3 · בונים כוח", minutes:35, perWeek:3,
+  {from:5, to:8, name:"שלב 3 · בונים כוח", minutes:35,
     cardio:[["bike",15]], sets:"2 סטים × 12 חזרות",
     A:["legpress","pulldown","legraise","wallplank","abduction"], B:["bridge","row","chest","sitstand","abduction"],
-    goal:"אימון שלישי בשבוע. כשסט של 12 מרגיש קל — מוסיפים את המשקל הקטן ביותר במכונה."},
-  {from:9, to:999, name:"שלב 4 · זו כבר שגרה", minutes:45, perWeek:3,
+    goal:"כשסט של 12 מרגיש קל — מוסיפים את המשקל הקטן ביותר במכונה."},
+  {from:9, to:999, name:"שלב 4 · זו כבר שגרה", minutes:45,
     cardio:[["bike",10],["walk",10]], sets:"2–3 סטים × 12 חזרות",
     A:["legpress","pulldown","legraise","wallplank","abduction","chest"], B:["bridge","row","sitstand","abduction","legraise","pulldown"],
     goal:"אפשר להחליף את ההליכה באליפטיקל אם הברכיים מרגישות טוב. מכאן ממשיכים בשגרה ומעלים משקל בהדרגה."}
@@ -518,13 +518,12 @@ function placeFor(sunday, dayIdx){
   return MALCHA_DAYS[modeFor(sunday)].includes(dayIdx) ? "malcha" : "arnona";
 }
 function phaseFor(n){ return n < 1 ? null : PHASES.find(p => n >= p.from && n <= p.to); }
-// מפזר את האימונים של השבוע על ימי הארנונה, עם יום מנוחה ביניהם כשאפשר
+// אימון בכל יום בארנונה חוץ משבת; אימון א׳ ו-ב׳ מתחלפים
 function gymWeek(sunday){
   const n = weeksBetween(parse(S.gymStart), sunday) + 1, ph = phaseFor(n), days = {};
   if(!ph) return {n, ph, days};
-  const ar = [0,1,2,3,4,5,6].filter(i => placeFor(sunday, i) === "arnona");
-  const k = Math.min(ph.perWeek, ar.length);
-  for(let j=0;j<k;j++) days[ar[Math.round(j * ar.length / k)]] = ((n - 1 + j) % 2) ? "B" : "A";
+  const ar = [0,1,2,3,4,5].filter(i => placeFor(sunday, i) === "arnona");
+  ar.forEach((d, j) => days[d] = ((n - 1 + j) % 2) ? "B" : "A");
   return {n, ph, days};
 }
 function workoutSummary(ph, type){
@@ -573,7 +572,7 @@ function renderGym(){
   const phases = PHASES.map(ph => `<details class="rc"${g.ph===ph?" open":""}>
       <summary><span>${ph.name}${g.ph===ph?' <span class="edited">עכשיו</span>':""}</span><span class="t">${ph.to>100?`משבוע ${ph.from}`:`שבועות ${ph.from}–${ph.to}`}</span></summary>
       <div class="rcbody">
-        <div class="note">${ph.perWeek} אימונים בשבוע · ${ph.minutes} דק׳ · ${ph.sets}</div>
+        <div class="note">כל יום בארנונה חוץ משבת · ${ph.minutes} דק׳ · ${ph.sets}</div>
         <div>${ph.goal}</div>
         <div><b>אימון א׳:</b> ${ph.A.map(e=>EX[e].n).join(" · ")}</div>
         <div><b>אימון ב׳:</b> ${ph.B.map(e=>EX[e].n).join(" · ")}</div>
@@ -589,7 +588,7 @@ function renderGym(){
     </div>
     <h3 style="font-size:18px">האימונים של השבוע</h3>
     <div class="wk">${thisWeek}</div>
-    <p class="note" style="margin:0">בשאר ימי הארנונה: הליכה נינוחה או מנוחה. בימים במלחה — חופש.</p>
+    <p class="note" style="margin:0">בשבת בארנונה: מנוחה או הליכה נינוחה. בימים במלחה — חופש. כשיש אימונים בימים רצופים, אימון א׳ ו-ב׳ מתחלפים כדי לתת לשרירים לנוח.</p>
     <h3 style="font-size:18px">השלבים</h3>
     ${phases}
     <div class="panel">
@@ -632,7 +631,7 @@ function itemsFor(sunday, dayIdx){
   if(place === "arnona"){
     const g = gymWeek(sunday), type = g.days[dayIdx], dIso = iso(addDays(sunday, dayIdx));
     if(g.ph && type) out.push({id:"gym", time:S.gymTime, kind:`חדר כושר · שבוע ${g.n}`, cls:"gym", what:`אימון ${TL[type]} · ${g.ph.minutes} דק׳`, extra:workoutSummary(g.ph, type), workout:dIso});
-    else if(g.ph) out.push({id:"gym", time:S.gymTime, kind:"תנועה קלה", cls:"gym", what:"הליכה נינוחה 15 דק׳ — או מנוחה", extra:"יום בארנונה בלי אימון. גם מנוחה היא חלק מהתוכנית."});
+    else if(g.ph) out.push({id:"gym", time:S.gymTime, kind:"תנועה קלה", cls:"gym", what:"שבת — מנוחה או הליכה נינוחה", extra:"גם מנוחה היא חלק מהתוכנית."});
     else out.push({id:"gym", time:S.gymTime, kind:"חדר כושר", cls:"gym", what:"התוכנית עוד לא התחילה", extra:"אפשר לקבוע את שבוע ההתחלה בלשונית כושר"});
   }
   out.push({id:"medsAm", time:"08:00", kind:"תרופות בוקר", cls:"meds", what:"לקחת תרופות", pills:MEDS_AM});
