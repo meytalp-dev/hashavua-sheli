@@ -15,6 +15,7 @@
   --ground:#EEF3EF; --surface:#FFFFFF; --ink:#1B2A25; --muted:#5E6F68; --line:#D5DFD9;
   --malcha:#2C6E66; --malcha-soft:#DCEBE8;
   --arnona:#B8661A; --arnona-soft:#F6E6D3;
+  --abroad:#3F66A8; --abroad-soft:#E0E8F5;
   --meds:#6F4796; --meds-soft:#ECE3F5;
   --done:#9AA8A2;
   --radius:14px;
@@ -22,13 +23,13 @@
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --ground:#101714; --surface:#18221E; --ink:#E6EEEA; --muted:#98A9A2; --line:#2A3833;
-    --malcha:#6CC0B5; --malcha-soft:#1D3431; --arnona:#EBA462; --arnona-soft:#3A2A1B;
+    --malcha:#6CC0B5; --malcha-soft:#1D3431; --arnona:#EBA462; --arnona-soft:#3A2A1B; --abroad:#8FB0E6; --abroad-soft:#1E2A3D;
     --meds:#C4A3E6; --meds-soft:#2C2238; --done:#5D6C66;
   }
 }
 :root[data-theme="dark"]{
   --ground:#101714; --surface:#18221E; --ink:#E6EEEA; --muted:#98A9A2; --line:#2A3833;
-  --malcha:#6CC0B5; --malcha-soft:#1D3431; --arnona:#EBA462; --arnona-soft:#3A2A1B;
+  --malcha:#6CC0B5; --malcha-soft:#1D3431; --arnona:#EBA462; --arnona-soft:#3A2A1B; --abroad:#8FB0E6; --abroad-soft:#1E2A3D;
   --meds:#C4A3E6; --meds-soft:#2C2238; --done:#5D6C66;
 }
 *{box-sizing:border-box}
@@ -67,6 +68,14 @@ header.top{padding-block:18px 10px; display:grid; gap:12px}
 .dayp .loc{width:22px; height:5px; border-radius:3px; margin-top:3px}
 .dayp.malcha .loc{background:var(--malcha)}
 .dayp.arnona .loc{background:var(--arnona)}
+.dayp.abroad .loc{background:var(--abroad)}
+.dayp.hol::before{content:""; position:absolute; top:5px; inset-inline-end:6px; width:6px; height:6px; border-radius:50%; background:var(--meds)}
+.place.abroad{background:var(--abroad-soft); color:var(--abroad)}
+.tag.abroad{background:var(--abroad-soft); color:var(--abroad)}
+.mcell.abroad{background:var(--abroad-soft); color:var(--abroad)}
+.holchip{display:inline-block; margin-inline-start:8px; font-size:13px; font-weight:700; color:var(--meds)}
+.holbar{background:var(--meds-soft); color:var(--meds); border-radius:12px; padding:8px 12px; font-weight:600; font-size:15px}
+.hmark{font-size:10px; color:var(--meds); font-weight:700}
 .dayp[aria-current="date"]{border-color:var(--ink); border-width:2px; padding:5px 0 6px}
 .dayp.today .dn::after{content:" •"; color:var(--meds)}
 .legend{display:flex; gap:14px; font-size:13px; color:var(--muted)}
@@ -514,15 +523,46 @@ function modeFor(sunday){
   const diff = weeksBetween(parse(BASE_WEEK), sunday);
   return ((diff % 2) + 2) % 2 === 0 ? "lior" : "meytal";
 }
+/* חגים (מלוח „חגים בישראל״) — chag: חדר הכושר והחנויות סגורים; erev: נסגר מוקדם; moed: שעות מקוצרות; fast: צום */
+const HOLIDAYS = {
+  "2026-09-11":{n:"ערב ראש השנה", t:"erev"},
+  "2026-09-12":{n:"ראש השנה", t:"chag"},
+  "2026-09-13":{n:"ראש השנה · יום ב׳", t:"chag"},
+  "2026-09-14":{n:"צום גדליה", t:"fast"},
+  "2026-09-20":{n:"ערב יום כיפור", t:"erev"},
+  "2026-09-21":{n:"יום כיפור", t:"chag", fast:true},
+  "2026-09-25":{n:"ערב סוכות", t:"erev"},
+  "2026-09-26":{n:"סוכות", t:"chag"},
+  "2026-09-27":{n:"חול המועד סוכות", t:"moed"},
+  "2026-09-28":{n:"חול המועד סוכות", t:"moed"},
+  "2026-09-29":{n:"חול המועד סוכות", t:"moed"},
+  "2026-09-30":{n:"חול המועד סוכות", t:"moed"},
+  "2026-10-01":{n:"חול המועד סוכות", t:"moed"},
+  "2026-10-02":{n:"הושענא רבה · ערב שמחת תורה", t:"erev"},
+  "2026-10-03":{n:"שמחת תורה", t:"chag"},
+  "2026-10-27":{n:"יום הבחירות", t:"info"}
+};
+/* חריגים מהסבב */
+const TRIPS = [
+  {from:"2026-10-11", to:"2026-10-16", place:"malcha", n:"ליאור בחו״ל — כל הימים במלחה"},
+  {from:"2026-10-29", to:"2026-11-03", place:"abroad", n:"טיסה — בחו״ל"}
+];
+const PLACE_NAME = {malcha:"מלחה", arnona:"ארנונה", abroad:"חו״ל"};
+const tripFor = dIso => TRIPS.find(t => dIso >= t.from && dIso <= t.to) || null;
 function placeFor(sunday, dayIdx){
+  const trip = tripFor(iso(addDays(sunday, dayIdx)));
+  if(trip) return trip.place;
   return MALCHA_DAYS[modeFor(sunday)].includes(dayIdx) ? "malcha" : "arnona";
 }
 function phaseFor(n){ return n < 1 ? null : PHASES.find(p => n >= p.from && n <= p.to); }
-// אימון בכל יום בארנונה חוץ משבת; אימון א׳ ו-ב׳ מתחלפים
+// אימון בכל יום בארנונה חוץ משבת וחגים; אימון א׳ ו-ב׳ מתחלפים
 function gymWeek(sunday){
   const n = weeksBetween(parse(S.gymStart), sunday) + 1, ph = phaseFor(n), days = {};
   if(!ph) return {n, ph, days};
-  const ar = [0,1,2,3,4,5].filter(i => placeFor(sunday, i) === "arnona");
+  const ar = [0,1,2,3,4,5].filter(i => {
+    const h = HOLIDAYS[iso(addDays(sunday, i))];
+    return placeFor(sunday, i) === "arnona" && !(h && h.t === "chag");
+  });
   ar.forEach((d, j) => days[d] = ((n - 1 + j) % 2) ? "B" : "A");
   return {n, ph, days};
 }
@@ -628,19 +668,35 @@ function planFor(sunday, dayIdx){
 function itemsFor(sunday, dayIdx){
   const p = planFor(sunday, dayIdx), place = placeFor(sunday, dayIdx), out = [];
   const meal = (slot, time, kind) => out.push({id:slot, slot, time, kind, what:p[slot].n, extra:dishExtra(slot, p[slot]), r:p[slot].r, edited:p.edited[slot]});
+  const dIso = iso(addDays(sunday, dayIdx)), hol = HOLIDAYS[dIso];
+  const holNote = hol && hol.t === "erev" ? "ערב חג — חדר הכושר נסגר מוקדם, עדיף להגיע בבוקר."
+                : hol && hol.t === "moed" ? "חול המועד — כדאי לבדוק שעות פתיחה." : "";
   if(place === "arnona"){
-    const g = gymWeek(sunday), type = g.days[dayIdx], dIso = iso(addDays(sunday, dayIdx));
-    if(g.ph && type) out.push({id:"gym", time:S.gymTime, kind:`חדר כושר · שבוע ${g.n}`, cls:"gym", what:`אימון ${TL[type]} · ${g.ph.minutes} דק׳`, extra:workoutSummary(g.ph, type), workout:dIso});
+    const g = gymWeek(sunday), type = g.days[dayIdx];
+    if(g.ph && type) out.push({id:"gym", time:S.gymTime, kind:`חדר כושר · שבוע ${g.n}`, cls:"gym", what:`אימון ${TL[type]} · ${g.ph.minutes} דק׳`, extra:[holNote, workoutSummary(g.ph, type)].filter(Boolean).join(" "), workout:dIso});
+    else if(g.ph && hol && hol.t === "chag") out.push({id:"gym", time:S.gymTime, kind:"תנועה קלה", cls:"gym", what:`${hol.n} — חדר הכושר סגור`, extra:"מנוחה או הליכה נינוחה. חג שמח!"});
     else if(g.ph) out.push({id:"gym", time:S.gymTime, kind:"תנועה קלה", cls:"gym", what:"שבת — מנוחה או הליכה נינוחה", extra:"גם מנוחה היא חלק מהתוכנית."});
     else out.push({id:"gym", time:S.gymTime, kind:"חדר כושר", cls:"gym", what:"התוכנית עוד לא התחילה", extra:"אפשר לקבוע את שבוע ההתחלה בלשונית כושר"});
   }
-  out.push({id:"medsAm", time:"08:00", kind:"תרופות בוקר", cls:"meds", what:"לקחת תרופות", pills:MEDS_AM});
-  meal("breakfast", "08:15", "בוקר");
-  meal("snackAm", "10:30", "ביניים");
-  meal("lunch", "13:00", "צהריים");
-  meal("snackPm", "16:30", "ביניים");
-  meal("dinner", "19:00", "ערב");
-  out.push({id:"medsPm", time:"20:00", kind:"תרופות ערב", cls:"meds", what:"לקחת תרופות", pills:MEDS_PM});
+  const fastNote = hol && (hol.fast || hol.t === "fast") ? "יום צום — אם צמה, לבדוק מראש עם הרופא/ה איך לקחת את התרופות." : "";
+  const abroadNote = place === "abroad" ? "בחו״ל: לוקחים באותה שעה מקומית. אם יש הפרש שעות גדול — לבדוק מראש עם הרוקח/ת." : "";
+  // יום לפני הטיסה — תזכורת לארוז תרופות
+  const nextTrip = TRIPS.find(t => t.place === "abroad" && t.from === iso(addDays(sunday, dayIdx + 1)));
+  if(nextTrip){
+    const days = Math.round((parse(nextTrip.to) - parse(nextTrip.from)) / 864e5) + 1;
+    out.push({id:"pack", time:"21:00", kind:"לפני הטיסה", cls:"meds", what:"לארוז תרופות לתיק היד", extra:`ל-${days} ימים ועוד 2 ימי רזרבה.`, pills:[...MEDS_AM, ...MEDS_PM]});
+  }
+  out.push({id:"medsAm", time:"08:00", kind:"תרופות בוקר", cls:"meds", what:"לקחת תרופות", extra:[fastNote, abroadNote].filter(Boolean).join(" "), pills:MEDS_AM});
+  if(place === "abroad"){
+    out.push({id:"trip", time:"12:00", kind:"חופשה", what:"בלי תפריט — נהנים", extra:"אם אפשר: חלבון וירקות בכל ארוחה, הרבה מים והרבה הליכה."});
+  } else {
+    meal("breakfast", "08:15", "בוקר");
+    meal("snackAm", "10:30", "ביניים");
+    meal("lunch", "13:00", "צהריים");
+    meal("snackPm", "16:30", "ביניים");
+    meal("dinner", "19:00", "ערב");
+  }
+  out.push({id:"medsPm", time:"20:00", kind:"תרופות ערב", cls:"meds", what:"לקחת תרופות", extra:abroadNote, pills:MEDS_PM});
   out.sort((a,b) => a.time.localeCompare(b.time));
   return out;
 }
@@ -656,15 +712,18 @@ function renderHeader(){
   $("prevWeek").setAttribute("aria-label", isMonth ? "חודש קודם" : "שבוע קודם");
   $("nextWeek").setAttribute("aria-label", isMonth ? "חודש הבא" : "שבוע הבא");
   $("strip").hidden = $("weekPlace").hidden = isMonth;
-  const m = modeFor(weekStart);
-  $("weekPlace").innerHTML = m === "lior"
-    ? `<span>מלחה: <b style="color:var(--malcha)">ג׳ ד׳ ה׳</b> · ארנונה: <b style="color:var(--arnona)">א׳ ב׳ ו׳ ש׳</b></span>`
-    : `<span>מלחה: <b style="color:var(--malcha)">א׳ ב׳ ו׳ ש׳</b> · ארנונה: <b style="color:var(--arnona)">ג׳ ד׳ ה׳</b></span>`;
+  const byPlace = {malcha:[], arnona:[], abroad:[]};
+  for(let i=0;i<7;i++) byPlace[placeFor(weekStart,i)].push(DAY_SHORT[i]);
+  const hols = [0,1,2,3,4,5,6].map(i => HOLIDAYS[iso(addDays(weekStart,i))]).filter(h => h && h.t !== "moed");
+  const trips = [...new Set([0,1,2,3,4,5,6].map(i => tripFor(iso(addDays(weekStart,i)))).filter(Boolean))];
+  $("weekPlace").innerHTML = `<span>${Object.entries(byPlace).filter(([,v]) => v.length).map(([k,v]) => `${PLACE_NAME[k]}: <b style="color:var(--${k})">${v.join(" ")}</b>`).join(" · ")}</span>`
+    + trips.map(t => `<span class="holchip">✈ ${t.n}</span>`).join("")
+    + hols.map(h => `<span class="holchip">✡ ${h.n}</span>`).join("");
   const todayIso = iso(today);
   $("strip").innerHTML = DAY_SHORT.map((n,i) => {
-    const d = addDays(weekStart, i);
+    const d = addDays(weekStart, i), h = HOLIDAYS[iso(d)];
     const cur = i === selDay ? ' aria-current="date"' : "";
-    return `<button class="dayp ${placeFor(weekStart,i)}${iso(d)===todayIso?" today":""}" data-day="${i}"${cur} aria-label="יום ${DAY_NAMES[i]} ${fmt(d)}"><span class="dn">${n}</span><span class="dd mono">${d.getDate()}</span><span class="loc"></span></button>`;
+    return `<button class="dayp ${placeFor(weekStart,i)}${iso(d)===todayIso?" today":""}${h?" hol":""}" data-day="${i}"${cur} aria-label="יום ${DAY_NAMES[i]} ${fmt(d)}${h?", "+h.n:""}"><span class="dn">${n}</span><span class="dd mono">${d.getDate()}</span><span class="loc"></span></button>`;
   }).join("");
 }
 
@@ -675,8 +734,10 @@ function renderDay(){
   $("view-day").innerHTML = `
     <div class="dayhead">
       <h2>יום ${DAY_NAMES[selDay]}, ${fmt(d)}</h2>
-      <span class="place ${place}">${place === "malcha" ? "במלחה" : "בארנונה · חדר כושר"}</span>
+      <span class="place ${place}">${place === "malcha" ? "במלחה" : place === "abroad" ? "בחו״ל" : "בארנונה · חדר כושר"}</span>
     </div>
+    ${HOLIDAYS[dIso] ? `<div class="holbar">✡ ${HOLIDAYS[dIso].n}${HOLIDAYS[dIso].t==="chag" ? " · חנויות וחדר כושר סגורים" : HOLIDAYS[dIso].t==="erev" ? " · החנויות נסגרות בצהריים" : ""}</div>` : ""}
+    ${tripFor(dIso) ? `<div class="holbar">✈ ${tripFor(dIso).n}</div>` : ""}
     <div class="progress" aria-label="${done} מתוך ${items.length} בוצעו"><i style="width:${Math.round(done/items.length*100)}%"></i></div>
     <ul class="timeline">${items.map(it => {
       const on = !!S.checks[`${dIso}:${it.id}`];
@@ -699,7 +760,8 @@ function renderWeek(){
   const days = DAY_NAMES.map((name,i) => {
     const p = planFor(weekStart,i), place = placeFor(weekStart,i), d = addDays(weekStart,i);
     return `<button class="wkday" data-goday="${i}">
-      <div class="h"><b>${name} <span class="mono" style="font-weight:500;color:var(--muted)">${fmt(d)}</span></b><span class="tag ${place}">${place==="malcha"?"מלחה":"ארנונה · כושר"}</span></div>
+      <div class="h"><b>${name} <span class="mono" style="font-weight:500;color:var(--muted)">${fmt(d)}</span></b><span class="tag ${place}">${place==="malcha"?"מלחה":place==="abroad"?"חו״ל":"ארנונה · כושר"}</span></div>
+      ${HOLIDAYS[iso(d)] ? `<div class="ln" style="color:var(--meds)">✡ ${HOLIDAYS[iso(d)].n}</div>` : ""}
       <div class="ln">בוקר: <span>${esc(p.breakfast.n)}</span></div>
       <div class="ln">צהריים: <span>${esc(p.lunch.n)}</span></div>
       <div class="ln">ביניים: <span>${esc(p.snackAm.n)} · ${esc(p.snackPm.n)}</span></div>
@@ -828,6 +890,7 @@ function buildShopping(){
   const tot = {}, mine = {};
   const add = obj => { for(const k in obj) tot[k] = (tot[k]||0) + obj[k]; };
   for(let i=0;i<7;i++){
+    if(placeFor(weekStart,i) === "abroad") continue;
     const p = planFor(weekStart,i);
     for(const slot in SLOTS){
       const dish = p[slot];
@@ -853,6 +916,16 @@ function buildShopping(){
   }
   return groups;
 }
+function shopAlerts(){
+  const out = [];
+  for(let i=0;i<7;i++){
+    const d = addDays(weekStart,i), h = HOLIDAYS[iso(d)];
+    if(h && h.t === "chag") out.push(`✡ ${h.n} (${DAY_NAMES[i]} ${fmt(d)}) — החנויות סגורות. לקנות עד הצהריים של יום קודם.`);
+  }
+  const abroad = [0,1,2,3,4,5,6].filter(i => placeFor(weekStart,i) === "abroad");
+  if(abroad.length) out.push(`✈ בימים ${abroad.map(i => DAY_SHORT[i]).join(" ")} את בחו״ל — הם לא נכללים ברשימה. לא לקנות ירקות ומוצרי חלב מעבר לימים שלפני הטיסה.`);
+  return out.map(x => `<div class="holbar">${x}</div>`).join("");
+}
 function renderShop(){
   const st = S.shop[shopKey()] = S.shop[shopKey()] || {got:{}, extra:[]};
   const groups = buildShopping();
@@ -871,6 +944,7 @@ function renderShop(){
     <div class="dayhead"><h2>רשימת קניות</h2><span class="note mono">${got}/${all}</span></div>
     <div class="progress"><i style="width:${all?Math.round(got/all*100):0}%"></i></div>
     <p class="note" style="margin:0">מחושב מהתפריט של השבוע ${fmt(weekStart)}–${fmt(addDays(weekStart,6))}. הכמויות למנה אחת ליום.</p>
+    ${shopAlerts()}
     <div class="row">
       <input type="text" id="extraItem" placeholder="להוסיף פריט…" style="flex:1;min-width:0">
       <button class="btn" id="addExtra">הוספה</button>
@@ -924,25 +998,31 @@ function renderMonth(){
   const cells = Math.ceil((weeksBetween(start, sundayOf(last)) + 1)) * 7;
   const todayIso = iso(today);
   let malcha = 0, gym = 0, medsDays = 0, pastDays = 0, html = "";
+  const holList = [];
   for(let i=0;i<cells;i++){
     const d = addDays(start, i), sun = sundayOf(d), di = d.getDay(), place = placeFor(sun, di), dIso = iso(d);
-    const inMonth = d.getMonth() === mo;
+    const inMonth = d.getMonth() === mo, h = HOLIDAYS[dIso], isGym = !!gymWeek(sun).days[di];
     const medsOk = S.checks[`${dIso}:medsAm`] && S.checks[`${dIso}:medsPm`];
     if(inMonth){
-      if(place === "malcha") malcha++; else gym++;
+      if(place === "malcha") malcha++;
+      if(isGym) gym++;
       if(dIso <= todayIso){ pastDays++; if(medsOk) medsDays++; }
+      if(h && h.t !== "moed" && h.t !== "info") holList.push(`${d.getDate()}.${mo+1} ${h.n}`);
     }
-    html += `<button class="mcell ${place}${inMonth?"":" out"}${dIso===todayIso?" today":""}" data-date="${dIso}" aria-label="${DAY_NAMES[di]} ${fmt(d)}, ${place==="malcha"?"מלחה":"ארנונה"}">
-      <span class="num mono">${d.getDate()}</span><span>${place==="malcha"?"מלחה":"כושר"}</span><span class="ok">${medsOk?"💊✓":""}</span></button>`;
+    const label = place === "malcha" ? "מלחה" : place === "abroad" ? "חו״ל" : isGym ? "כושר" : "ארנונה";
+    html += `<button class="mcell ${place}${inMonth?"":" out"}${dIso===todayIso?" today":""}" data-date="${dIso}" aria-label="${DAY_NAMES[di]} ${fmt(d)}, ${PLACE_NAME[place]}${h?", "+h.n:""}">
+      <span class="num mono">${d.getDate()}</span><span>${label}</span><span class="ok">${h ? `<span class="hmark">${h.t==="moed"?"חוה״מ":h.t==="erev"?"ערב חג":h.t==="fast"?"צום":h.t==="info"?"בחירות":"חג"}</span>` : medsOk?"💊✓":""}</span></button>`;
   }
   $("view-month").innerHTML = `
-    <div class="legend"><span><i style="background:var(--malcha)"></i>מלחה</span><span><i style="background:var(--arnona)"></i>ארנונה + חדר כושר</span><span>💊✓ תרופות בוקר וערב סומנו</span></div>
+    <div class="legend" style="flex-wrap:wrap"><span><i style="background:var(--malcha)"></i>מלחה</span><span><i style="background:var(--arnona)"></i>ארנונה</span><span><i style="background:var(--abroad)"></i>חו״ל</span><span>💊✓ תרופות סומנו</span></div>
     <div class="mgrid">${DAY_SHORT.map(n=>`<div class="mh">${n}</div>`).join("")}${html}</div>
     <div class="stats">
       <div class="stat"><b>${malcha}</b><span>ימים במלחה</span></div>
-      <div class="stat"><b>${gym}</b><span>ימי חדר כושר</span></div>
+      <div class="stat"><b>${gym}</b><span>אימונים מתוכננים</span></div>
       <div class="stat"><b>${medsDays}/${pastDays}</b><span>ימים עם כל התרופות</span></div>
     </div>
+    ${holList.length ? `<div class="panel"><h3>חגים החודש</h3>${holList.map(x => `<div>✡ ${x}</div>`).join("")}<p class="note" style="margin:0">בחג אין אימון, ועושים קניות מראש. בערב חג חדר הכושר והחנויות נסגרים מוקדם.</p></div>` : ""}
+    ${TRIPS.filter(t => parse(t.from).getMonth() === mo || parse(t.to).getMonth() === mo).map(t => `<div class="holbar">✈ ${fmt(parse(t.from))}–${fmt(parse(t.to))}: ${t.n}</div>`).join("")}
     <p class="note" style="margin:0">לוחצים על יום כדי לראות את התפריט והתרופות שלו.</p>`;
 }
 
